@@ -792,7 +792,9 @@ public class dashboardController implements Initializable {
     }
 
     public void displayUsername() {
-        username.setText(getData.username);
+
+        username.setText(getData.login_username);
+        System.out.println("le username est hhhhhhhhhhhhh "+username);
     }
 
     public void switchForm(ActionEvent event) {
@@ -853,7 +855,7 @@ public class dashboardController implements Initializable {
             if (option.get().equals(ButtonType.OK)) {
 
                 logout.getScene().getWindow().hide();
-                Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+                Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument1.fxml"));
                 Stage stage = new Stage();
                 Scene scene = new Scene(root);
 
@@ -873,7 +875,7 @@ public class dashboardController implements Initializable {
                     stage.setOpacity(1);
                 });
 
-                stage.initStyle(StageStyle.TRANSPARENT);
+
 
                 stage.setScene(scene);
                 stage.show();
