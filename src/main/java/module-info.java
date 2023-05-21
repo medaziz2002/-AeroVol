@@ -3,6 +3,7 @@ module com.example.projetvolmanagement {
     requires javafx.fxml;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires java.mail;
     //requires java.mail;
 
     opens com.example.projetvolmanagement to javafx.fxml;

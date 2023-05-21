@@ -107,6 +107,14 @@ public class FXMLDocumentController1 implements Initializable {
     @FXML
     private TextField forgot_username;
 
+
+
+    @FXML
+    private TextField nom;
+
+
+    @FXML
+    private TextField prenom;
     @FXML
     private AnchorPane changePass_form;
 
@@ -121,12 +129,16 @@ public class FXMLDocumentController1 implements Initializable {
 
     @FXML
     private PasswordField changePass_cPassword;
+
+
+
     private double x = 0;
     private double y = 0;
 
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
+    private ResultSet res;
     private Statement statement;
 
     public Connection connectDB() {
@@ -149,8 +161,10 @@ public class FXMLDocumentController1 implements Initializable {
         if (login_username.getText().isEmpty() || login_password.getText().isEmpty()) {
             alert.errorMessage("Incorrect Username/Password");
         } else {
-            String selectData = "SELECT * FROM users WHERE "
+            String selectData = "SELECT role FROM users WHERE "
                     + "username = ? and password = ?"; // users IS OUR TABLE NAME
+
+
 
             connect = connectDB();
 
@@ -167,15 +181,21 @@ public class FXMLDocumentController1 implements Initializable {
 
                 result = prepare.executeQuery();
 
+
+
+
+
                 if (result.next()) {
                     // ONCE ALL DATA THAT USERS INSERT ARE CORRECT, THEN WE WILL PROCEED TO OUR MAIN FORM
 
-                    alert.successMessage("Successfully Login!");
 
+
+                    String userRole = result.getString("role");
+                    getData.setRole(userRole);
 
                     getData.login_username = login_username.getText();
 
-                    Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
+                    Parent root = FXMLLoader.load(getClass().getResource("aeroport.fxml"));
                     Stage stage = new Stage();
                     Scene scene = new Scene(root);
 
@@ -189,7 +209,7 @@ public class FXMLDocumentController1 implements Initializable {
                         stage.setY(event.getScreenY() - y);
                     });
 
-                    stage.initStyle(StageStyle.TRANSPARENT);
+                   // stage.initStyle(StageStyle.TRANSPARENT);
                     stage.setScene(scene);
                     stage.show();
 
@@ -287,7 +307,7 @@ public class FXMLDocumentController1 implements Initializable {
         if (signup_email.getText().isEmpty() || signup_username.getText().isEmpty()
                 || signup_password.getText().isEmpty() || signup_cPassword.getText().isEmpty()
                 || signup_selectQuestion.getSelectionModel().getSelectedItem() == null
-                || signup_answer.getText().isEmpty()) {
+                || signup_answer.getText().isEmpty() || nom.getText().isEmpty() || prenom.getText().isEmpty()) {
             alert.errorMessage("All fields are necessary to be filled");
         } else if (signup_password.getText() == signup_cPassword.getText()) {
             // CHECK IF THE VALUE OF PASSWORD FIELDS IS EQUAL TO CONFIRM PASSWORD
@@ -310,11 +330,12 @@ public class FXMLDocumentController1 implements Initializable {
                 } else {
 
                     String insertData = "INSERT INTO users "
-                            + "(email, username, password, question, answer, date) "
-                            + "VALUES(?,?,?,?,?,?)"; // FIVE (?)
+                            + "(email, username, password, question, answer, date,nom,prenom) "
+                            + "VALUES(?,?,?,?,?,?,?,?,'user')"; // FIVE (?)
 
                     prepare = connect.prepareStatement(insertData);
                     prepare.setString(1, signup_email.getText());
+
                     prepare.setString(2, signup_username.getText());
                     prepare.setString(3, signup_password.getText());
                     prepare.setString(4,
@@ -325,7 +346,8 @@ public class FXMLDocumentController1 implements Initializable {
                     java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
                     prepare.setString(6, String.valueOf(sqlDate));
-
+prepare.setString(7,nom.getText());
+prepare.setString(8,prenom.getText());
                     prepare.executeUpdate();
 
                     alert.successMessage("Registered Successfully!");

@@ -20,7 +20,7 @@
 
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.projetvolmanagement.dashboardController">
     <children>
-        <AnchorPane fx:id="main_form" prefHeight="200.0" prefWidth="200.0">
+        <AnchorPane fx:id="admin_main_form" prefHeight="200.0" prefWidth="200.0" visible="false">
             <children>
                 <BorderPane layoutX="79.0" layoutY="100.0" prefHeight="600.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <top>
@@ -87,7 +87,7 @@
                                                 <Font size="14.0" />
                                             </font>
                                         </Label>
-                              <Button fx:id="gestion_clients_btn" layoutX="16.0" layoutY="287.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@dashboardDessign.css" text="Gestion des clients" />
+                              <Button fx:id="addEmployee_btn1" layoutX="16.0" layoutY="287.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@dashboardDessign.css" text="Gestion des clients" />
                                     </children>
                                 </AnchorPane>
                             </children>
@@ -301,7 +301,7 @@
                                         </AnchorPane>
                                     </children>
                                 </AnchorPane>
-                        <AnchorPane fx:id="gestion_clients_admin_btn" prefHeight="553.0" prefWidth="889.0" stylesheets="@dashboardDessign.css">
+                        <AnchorPane prefHeight="553.0" prefWidth="889.0" stylesheets="@dashboardDessign.css">
                            <children>
                               <TableView fx:id="salary_tableView1" layoutX="76.0" onMouseClicked="#salarySelect" prefHeight="367.0" prefWidth="737.0" stylesheets="@dashboardDessign.css">
                                  <columns>
@@ -309,12 +309,12 @@
                                     <TableColumn fx:id="salary_col_firstName1" prefWidth="132.800048828125" text="Nom " />
                                     <TableColumn fx:id="salary_col_lastName1" prefWidth="132.7999267578125" text="Prenom" />
                                     <TableColumn fx:id="salary_col_position1" prefWidth="228.800048828125" text="email" />
-                                    <TableColumn prefWidth="126.40004882812502" text="passager" />
+                                    <TableColumn prefWidth="127.199951171875" text="passager" />
                                  </columns>
                               </TableView>
-                              <Button fx:id="salary_updateBtn1" layoutX="263.0" layoutY="434.0" mnemonicParsing="false" onAction="#salaryUpdate" prefHeight="38.0" prefWidth="99.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Accepter" />
-                              <Button fx:id="salary_clearBtn1" layoutX="543.0" layoutY="434.0" mnemonicParsing="false" onAction="#salaryReset" prefHeight="38.0" prefWidth="99.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
-                              <Button fx:id="salary_updateBtn11" layoutX="403.0" layoutY="434.0" mnemonicParsing="false" onAction="#salaryUpdate" prefHeight="38.0" prefWidth="99.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Refuser" />
+                              <Button fx:id="salary_updateBtn1" layoutX="186.0" layoutY="435.0" mnemonicParsing="false" onAction="#salaryUpdate" prefHeight="38.0" prefWidth="99.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Accepter" />
+                              <Button fx:id="salary_clearBtn1" layoutX="568.0" layoutY="435.0" mnemonicParsing="false" onAction="#salaryReset" prefHeight="38.0" prefWidth="99.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
+                              <Button fx:id="salary_updateBtn11" layoutX="388.0" layoutY="435.0" mnemonicParsing="false" onAction="#salaryUpdate" prefHeight="38.0" prefWidth="99.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Refuser" />
                            </children>
                         </AnchorPane>
                             </children>
@@ -323,5 +323,53 @@
                 </BorderPane>
             </children>
         </AnchorPane>
+      <AnchorPane fx:id="client_main_form" prefHeight="600.0" prefWidth="206.0">
+         <children>
+            <AnchorPane prefHeight="600.0" prefWidth="214.0" styleClass="nav-form" stylesheets="@dashboardDessign.css">
+               <children>
+                  <FontAwesomeIcon fill="WHITE" glyphName="USER" layoutX="73.0" layoutY="105.0" size="7em" />
+                  <Label layoutX="69.0" layoutY="117.0" text="Welcome," textFill="WHITE">
+                     <font>
+                        <Font name="Tahoma" size="17.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="username1" alignment="CENTER" layoutX="9.0" layoutY="138.0" prefHeight="23.0" prefWidth="194.0" text="MarcoMan" textFill="WHITE">
+                     <font>
+                        <Font name="Arial Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Line endX="69.0" layoutX="121.0" layoutY="178.0" startX="-100.0" stroke="WHITE" />
+                  <Button fx:id="addEmployee_btn1" layoutX="16.0" layoutY="252.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@dashboardDessign.css" text="Vols reservées" />
+                  <Button fx:id="logout1" layoutX="9.0" layoutY="509.0" mnemonicParsing="false" onAction="#logout" stylesheets="@dashboardDessign.css">
+                     <graphic>
+                        <FontAwesomeIcon fill="WHITE" glyphName="SIGN_OUT" size="2em" />
+                     </graphic>
+                     <styleClass>
+                        <String fx:value="logout" />
+                        <String fx:value="shadow" />
+                     </styleClass>
+                  </Button>
+                  <Label layoutX="62.0" layoutY="515.0" text="Logout" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="addEmployee_btn11" layoutX="17.0" layoutY="300.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@dashboardDessign.css" text="Listes des vols" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="213.0" prefHeight="600.0" prefWidth="887.0" />
+            <TableView fx:id="user_liste_vol_tableview" layoutX="213.0" layoutY="42.0" onMouseClicked="#addEmployeeSelect" prefHeight="265.0" prefWidth="887.0">
+               <columns>
+                  <TableColumn fx:id="addEmployee_col_employeeID1" prefWidth="84.0" text="Numero Vol" />
+                  <TableColumn fx:id="addEmployee_col_firstName1" prefWidth="110.4000244140625" text="Départ" />
+                  <TableColumn fx:id="addEmployee_col_lastName1" prefWidth="122.39994812011719" text="Destination" />
+                  <TableColumn fx:id="addEmployee_col_gender1" prefWidth="100.0" text="Date " />
+                  <TableColumn fx:id="addEmployee_col_phoneNum1" prefWidth="128.79998779296875" text="Heure Départ" />
+                  <TableColumn prefWidth="170.4000244140625" text="Heure Arrivéé" />
+                  <TableColumn fx:id="addEmployee_col_position1" prefWidth="129.5999755859375" text="Liste Escales" />
+               </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
     </children>
 </StackPane>

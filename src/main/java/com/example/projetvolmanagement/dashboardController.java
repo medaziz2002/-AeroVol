@@ -43,16 +43,37 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-/**
- *
- * @author MarcoMan
- * Subscribe our Channel --> https://www.youtube.com/channel/UCPgcmw0LXToDn49akUEJBkQ
- * Thanks for the support guys! <3
- */
+
 public class dashboardController implements Initializable {
 
     @FXML
     private AnchorPane main_form;
+
+
+    @FXML
+    private AnchorPane admin_gestion_vols;
+
+    @FXML
+    private AnchorPane sidebar_client;
+
+    @FXML
+    private AnchorPane user_liste_vols;
+
+    @FXML
+    private AnchorPane user_reservations;
+
+    @FXML
+    private AnchorPane user_listes_escale;
+
+    @FXML
+    private AnchorPane client_interface;
+
+
+    @FXML
+    private AnchorPane admin_gestion_clients;
+
+    @FXML
+    private AnchorPane admin_gestion_escales;
 
     @FXML
     private Button close;
@@ -67,16 +88,19 @@ public class dashboardController implements Initializable {
     private Button home_btn;
 
     @FXML
-    private Button addEmployee_btn;
+    private Button gestion_vols;
 
     @FXML
-    private Button salary_btn;
+    private Button gestion_escales;
 
+
+    @FXML
+    private Button gestion_clients;
     @FXML
     private Button logout;
 
     @FXML
-    private AnchorPane home_form;
+    private AnchorPane home;
 
     @FXML
     private Label home_totalEmployees;
@@ -160,6 +184,10 @@ public class dashboardController implements Initializable {
     private AnchorPane salary_form;
 
     @FXML
+    private AnchorPane admin_interface;
+
+
+    @FXML
     private TextField salary_employeeID;
 
     @FXML
@@ -206,8 +234,8 @@ public class dashboardController implements Initializable {
     private Image image;
 
     public void homeTotalEmployees() {
-
-        String sql = "SELECT COUNT(id) FROM employee";
+/*
+        String sql = "SELECT COUNT(num_vol) FROM vol";
 
         connect = database.connectDb();
         int countData = 0;
@@ -217,7 +245,7 @@ public class dashboardController implements Initializable {
             result = prepare.executeQuery();
 
             while (result.next()) {
-                countData = result.getInt("COUNT(id)");
+                countData = result.getInt("COUNT(num_vol)");
             }
 
             home_totalEmployees.setText(String.valueOf(countData));
@@ -225,12 +253,12 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void homeEmployeeTotalPresent() {
-
-        String sql = "SELECT COUNT(id) FROM employee_info";
+/*
+        String sql = "SELECT COUNT(id) FROM vol";
 
         connect = database.connectDb();
         int countData = 0;
@@ -246,12 +274,12 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void homeTotalInactive() {
-
-        String sql = "SELECT COUNT(id) FROM employee_info WHERE salary = '0.0'";
+/*
+        String sql = "SELECT COUNT(id) FROM vol WHERE prix = '0.0'";
 
         connect = database.connectDb();
         int countData = 0;
@@ -267,14 +295,14 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void homeChart() {
-
+/*
         home_chart.getData().clear();
 
-        String sql = "SELECT date, COUNT(id) FROM employee GROUP BY date ORDER BY TIMESTAMP(date) ASC LIMIT 7";
+        String sql = "SELECT dateDepart, COUNT(id) FROM vol GROUP BY dateDepart ORDER BY TIMESTAMP(dateDepart) ASC LIMIT 7";
 
         connect = database.connectDb();
 
@@ -293,11 +321,11 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void addEmployeeAdd() {
-
+/*
         Date date = new Date();
         java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
@@ -379,11 +407,11 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void addEmployeeUpdate() {
-
+/*
         String uri = getData.path;
         uri = uri.replace("\\", "\\\\");
 
@@ -463,11 +491,11 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void addEmployeeDelete() {
-
+/*
         String sql = "DELETE FROM employee WHERE employee_id = '"
                 + addEmployee_employeeID.getText() + "'";
 
@@ -519,10 +547,11 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public void addEmployeeReset() {
+        /*
         addEmployee_employeeID.setText("");
         addEmployee_firstName.setText("");
         addEmployee_lastName.setText("");
@@ -530,11 +559,11 @@ public class dashboardController implements Initializable {
         addEmployee_position.getSelectionModel().clearSelection();
         addEmployee_phoneNum.setText("");
         addEmployee_image.setImage(null);
-        getData.path = "";
+        getData.path = "";*/
     }
 
     public void addEmployeeInsertImage() {
-
+/*
         FileChooser open = new FileChooser();
         File file = open.showOpenDialog(main_form.getScene().getWindow());
 
@@ -543,12 +572,13 @@ public class dashboardController implements Initializable {
 
             image = new Image(file.toURI().toString(), 101, 127, false, true);
             addEmployee_image.setImage(image);
-        }
+        }*/
     }
 
     private String[] positionList = {"Marketer Coordinator", "Web Developer (Back End)", "Web Developer (Front End)", "App Developer"};
 
     public void addEmployeePositionList() {
+        /*
         List<String> listP = new ArrayList<>();
 
         for (String data : positionList) {
@@ -556,12 +586,13 @@ public class dashboardController implements Initializable {
         }
 
         ObservableList listData = FXCollections.observableArrayList(listP);
-        addEmployee_position.setItems(listData);
+        addEmployee_position.setItems(listData);*/
     }
 
     private String[] listGender = {"Male", "Female", "Others"};
 
     public void addEmployeeGendernList() {
+        /*
         List<String> listG = new ArrayList<>();
 
         for (String data : listGender) {
@@ -570,10 +601,12 @@ public class dashboardController implements Initializable {
 
         ObservableList listData = FXCollections.observableArrayList(listG);
         addEmployee_gender.setItems(listData);
+        */
+
     }
 
     public void addEmployeeSearch() {
-
+/*
         FilteredList<employeeData> filter = new FilteredList<>(addEmployeeList, e -> true);
 
         addEmployee_search.textProperty().addListener((Observable, oldValue, newValue) -> {
@@ -610,38 +643,45 @@ public class dashboardController implements Initializable {
 
         sortList.comparatorProperty().bind(addEmployee_tableView.comparatorProperty());
         addEmployee_tableView.setItems(sortList);
+
+ */
     }
+    /*
+        public ObservableList<employeeData> addEmployeeListData() {
 
-    public ObservableList<employeeData> addEmployeeListData() {
+            ObservableList<employeeData> listData = FXCollections.observableArrayList();
+            String sql = "SELECT * FROM employee";
 
-        ObservableList<employeeData> listData = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM employee";
+            connect = database.connectDb();
 
-        connect = database.connectDb();
+            try {
+                prepare = connect.prepareStatement(sql);
+                result = prepare.executeQuery();
+                employeeData employeeD;
 
-        try {
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-            employeeData employeeD;
+                while (result.next()) {
+                    employeeD = new employeeData(result.getInt("employee_id"),
+                            result.getString("firstName"),
+                            result.getString("lastName"),
+                            result.getString("gender"),
+                            result.getString("phoneNum"),
+                            result.getString("position"),
+                            result.getString("image"),
+                            result.getDate("date"));
+                    listData.add(employeeD);
 
-            while (result.next()) {
-                employeeD = new employeeData(result.getInt("employee_id"),
-                        result.getString("firstName"),
-                        result.getString("lastName"),
-                        result.getString("gender"),
-                        result.getString("phoneNum"),
-                        result.getString("position"),
-                        result.getString("image"),
-                        result.getDate("date"));
-                listData.add(employeeD);
+                }
 
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return listData;
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
-        return listData;
-    }
+
+     */
+    /*
     private ObservableList<employeeData> addEmployeeList;
 
     public void addEmployeeShowListData() {
@@ -658,8 +698,9 @@ public class dashboardController implements Initializable {
         addEmployee_tableView.setItems(addEmployeeList);
 
     }
-
+*/
     public void addEmployeeSelect() {
+        /*
         employeeData employeeD = addEmployee_tableView.getSelectionModel().getSelectedItem();
         int num = addEmployee_tableView.getSelectionModel().getSelectedIndex();
 
@@ -678,10 +719,12 @@ public class dashboardController implements Initializable {
 
         image = new Image(uri, 101, 127, false, true);
         addEmployee_image.setImage(image);
+
+         */
     }
 
     public void salaryUpdate() {
-
+/*
         String sql = "UPDATE employee_info SET salary = '" + salary_salary.getText()
                 + "' WHERE employee_id = '" + salary_employeeID.getText() + "'";
 
@@ -715,6 +758,8 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+   */
+
     }
 
     public void salaryReset() {
@@ -723,13 +768,15 @@ public class dashboardController implements Initializable {
         salary_lastName.setText("");
         salary_position.setText("");
         salary_salary.setText("");
+
+
     }
 
     public ObservableList<employeeData> salaryListData() {
 
         ObservableList<employeeData> listData = FXCollections.observableArrayList();
 
-        String sql = "SELECT * FROM employee_info";
+        String sql = "SELECT * FROM vol";
 
         connect = database.connectDb();
 
@@ -758,6 +805,7 @@ public class dashboardController implements Initializable {
     private ObservableList<employeeData> salaryList;
 
     public void salaryShowListData() {
+        /*
         salaryList = salaryListData();
 
         salary_col_employeeID.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
@@ -767,7 +815,7 @@ public class dashboardController implements Initializable {
         salary_col_salary.setCellValueFactory(new PropertyValueFactory<>("salary"));
 
         salary_tableView.setItems(salaryList);
-
+*/
     }
 
     public void salarySelect() {
@@ -798,47 +846,110 @@ public class dashboardController implements Initializable {
     }
 
     public void switchForm(ActionEvent event) {
+        String role = getData.getRole();
+
+   if(role.equals("admin"))
+   {
+
+       System.out.println("le role est admin");
 
         if (event.getSource() == home_btn) {
-            home_form.setVisible(true);
-            addEmployee_form.setVisible(false);
-            salary_form.setVisible(false);
-
+            home.setVisible(true);
+            admin_gestion_vols.setVisible(false);
+            admin_gestion_escales.setVisible(false);
+            admin_gestion_clients.setVisible(false);
+            client_interface.setVisible(false);
             home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            addEmployee_btn.setStyle("-fx-background-color:transparent");
-            salary_btn.setStyle("-fx-background-color:transparent");
+            gestion_vols.setStyle("-fx-background-color:transparent");
+            admin_gestion_clients.setStyle("-fx-background-color:transparent");
 
             homeTotalEmployees();
             homeEmployeeTotalPresent();
             homeTotalInactive();
             homeChart();
 
-        } else if (event.getSource() == addEmployee_btn) {
-            home_form.setVisible(false);
-            addEmployee_form.setVisible(true);
-            salary_form.setVisible(false);
-
-            addEmployee_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+        } else if (event.getSource() == gestion_vols) {
+            home.setVisible(false);
+            admin_gestion_vols.setVisible(true);
+            admin_gestion_escales.setVisible(false);
+            admin_gestion_clients.setVisible(false);
+            client_interface.setVisible(false);
+            gestion_vols.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
             home_btn.setStyle("-fx-background-color:transparent");
-            salary_btn.setStyle("-fx-background-color:transparent");
+       //     salary_btn.setStyle("-fx-background-color:transparent");
 
             addEmployeeGendernList();
             addEmployeePositionList();
             addEmployeeSearch();
 
-        } else if (event.getSource() == salary_btn) {
-            home_form.setVisible(false);
-            addEmployee_form.setVisible(false);
-            salary_form.setVisible(true);
-
-            salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            addEmployee_btn.setStyle("-fx-background-color:transparent");
+        } else if (event.getSource() == gestion_clients) {
+            home.setVisible(false);
+            admin_gestion_vols.setVisible(false);
+            admin_gestion_escales.setVisible(false);
+            admin_gestion_clients.setVisible(true);
+            client_interface.setVisible(false);
+          //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+            gestion_vols.setStyle("-fx-background-color:transparent");
             home_btn.setStyle("-fx-background-color:transparent");
 
             salaryShowListData();
 
+        }else if(event.getSource()==gestion_escales)
+        {
+            home.setVisible(false);
+            admin_gestion_vols.setVisible(false);
+            admin_gestion_escales.setVisible(true);
+            admin_gestion_clients.setVisible(false);
+            client_interface.setVisible(false);
+            //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+            gestion_vols.setStyle("-fx-background-color:transparent");
+            home_btn.setStyle("-fx-background-color:transparent");
         }
+   }
+   else
+   {
+       if (event.getSource() == user_liste_vols) {
 
+           user_reservations.setVisible(false);
+           user_liste_vols.setVisible(true);
+           user_listes_escale.setVisible(false);
+           admin_interface.setVisible(false);
+           home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+           gestion_vols.setStyle("-fx-background-color:transparent");
+           admin_gestion_clients.setStyle("-fx-background-color:transparent");
+
+           homeTotalEmployees();
+           homeEmployeeTotalPresent();
+           homeTotalInactive();
+           homeChart();
+
+       } else if (event.getSource() == user_reservations) {
+           user_reservations.setVisible(true);
+           user_liste_vols.setVisible(false);
+           user_listes_escale.setVisible(false);
+           admin_interface.setVisible(false);
+           gestion_vols.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+           home_btn.setStyle("-fx-background-color:transparent");
+           //     salary_btn.setStyle("-fx-background-color:transparent");
+
+           addEmployeeGendernList();
+           addEmployeePositionList();
+           addEmployeeSearch();
+
+       } else if (event.getSource() == user_listes_escale) {
+
+           user_reservations.setVisible(false);
+           user_liste_vols.setVisible(false);
+           user_listes_escale.setVisible(true);
+           admin_interface.setVisible(false);
+           //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+           gestion_vols.setStyle("-fx-background-color:transparent");
+           home_btn.setStyle("-fx-background-color:transparent");
+
+           salaryShowListData();
+
+       }
+   }
     }
 
     private double x = 0;
@@ -905,7 +1016,7 @@ public class dashboardController implements Initializable {
         homeTotalInactive();
         homeChart();
 
-        addEmployeeShowListData();
+    //    addEmployeeShowListData();
         addEmployeeGendernList();
         addEmployeePositionList();
 
