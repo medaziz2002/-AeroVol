@@ -2,17 +2,15 @@ package com.example.projetvolmanagement;
 
 
 
-import java.io.File;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,24 +22,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 
 public class dashboardController implements Initializable {
@@ -63,7 +51,7 @@ public class dashboardController implements Initializable {
     private AnchorPane user_reservations;
 
     @FXML
-    private AnchorPane user_listes_escale;
+    private AnchorPane user_listes_escales;
 
     @FXML
     private AnchorPane client_interface;
@@ -95,6 +83,13 @@ public class dashboardController implements Initializable {
 
 
     @FXML
+    private Button vols_reservees;
+
+    @FXML
+    private Button listes_vols;
+
+
+    @FXML
     private Button gestion_clients;
     @FXML
     private Button logout;
@@ -118,41 +113,37 @@ public class dashboardController implements Initializable {
     private AnchorPane addEmployee_form;
 
     @FXML
-    private TableView<employeeData> addEmployee_tableView;
+    private TableView<VolData> admin_vols_tableview;
+    @FXML
+    private TableView<EscaleData> escales_tableview;
 
     @FXML
-    private TableColumn<employeeData, String> addEmployee_col_employeeID;
-
-    @FXML
-    private TableColumn<employeeData, String> addEmployee_col_firstName;
-
-    @FXML
-    private TableColumn<employeeData, String> addEmployee_col_lastName;
-
-    @FXML
-    private TableColumn<employeeData, String> addEmployee_col_gender;
-
-    @FXML
-    private TableColumn<employeeData, String> addEmployee_col_phoneNum;
-
-    @FXML
-    private TableColumn<employeeData, String> addEmployee_col_position;
-
-    @FXML
-    private TableColumn<employeeData, String> addEmployee_col_date;
-
-    @FXML
-    private TextField addEmployee_search;
+    private TextField rechercher_vol1;
 
     @FXML
     private TextField addEmployee_employeeID;
 
     @FXML
-    private TextField addEmployee_firstName;
+    private TextField champs_id_vol;
 
     @FXML
-    private TextField addEmployee_lastName;
+    private TextField champs_prix_vol;
+    @FXML
+    private TextField champs_destination_vol;
 
+
+
+
+    @FXML
+    private TextField champs_herue_arrivee;
+
+    @FXML
+    private TextField champs_heure_depart;
+
+    @FXML
+    private DatePicker champs_date_vol;
+    @FXML
+    private TextField   champs_depart_vol;
     @FXML
     private ComboBox<?> addEmployee_gender;
 
@@ -179,6 +170,9 @@ public class dashboardController implements Initializable {
 
     @FXML
     private Button addEmployee_clearBtn;
+
+    @FXML
+    private Button user_escales_btn;
 
     @FXML
     private AnchorPane salary_form;
@@ -208,24 +202,68 @@ public class dashboardController implements Initializable {
     @FXML
     private Button salary_clearBtn;
 
-    @FXML
-    private TableView<employeeData> salary_tableView;
+     @FXML
+     private Button   ajouter_escale;
+
+     @FXML
+     private Button    supprimer_escale;
 
     @FXML
-    private TableColumn<employeeData, String> salary_col_employeeID;
+    private Button    annuler_escale;
 
     @FXML
-    private TableColumn<employeeData, String> salary_col_firstName;
+    private TableColumn<VolData, String> id_vol1;
 
     @FXML
-    private TableColumn<employeeData, String> salary_col_lastName;
+    private TableColumn<VolData, String> depart_vol1;
 
     @FXML
-    private TableColumn<employeeData, String> salary_col_position;
+    private TableColumn<VolData, String> destination_vol1;
 
     @FXML
-    private TableColumn<employeeData, String> salary_col_salary;
+    private TableColumn<VolData, String> date_vol1;
 
+
+    @FXML
+    private TableColumn<VolData, String> heure_depart_vol1;
+
+    @FXML
+    private TableColumn<VolData, String> heure_arrivee_vol1;
+
+    @FXML
+    private TableColumn<VolData, String> prix_vol1;
+    @FXML
+    private ComboBox<String> volComboBox;
+
+
+    @FXML
+    private TextField champs_numero_escale;
+
+    @FXML
+    private TextField champs_heure_arrivee_escale;
+
+    @FXML
+    private TextField champs_heure_depart_escale;
+
+
+    @FXML
+    private TextField champs_ville_escale;
+
+
+    @FXML
+    private TableColumn<EscaleData, String> vol_escale;
+
+    @FXML
+    private TableColumn<EscaleData, String> heure_arrivee_escale1;
+
+    @FXML
+    private TableColumn<EscaleData, String> heure_depart_escale1;
+
+    @FXML
+    private TableColumn<EscaleData, String> ville_escale1;
+// Définissez les autres identifiants nécessaires pour les autres composants
+    @FXML
+    private TextField id_escale;
     private Connection connect;
     private Statement statement;
     private PreparedStatement prepare;
@@ -324,242 +362,252 @@ public class dashboardController implements Initializable {
 */
     }
 
-    public void addEmployeeAdd() {
-/*
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
-        String sql = "INSERT INTO employee "
-                + "(employee_id,firstName,lastName,gender,phoneNum,position,image,date) "
-                + "VALUES(?,?,?,?,?,?,?,?)";
 
-        connect = database.connectDb();
 
+    public void getVolsFromDatabase() throws SQLException {
+        String sql = "SELECT * FROM vol";
+
+        ObservableList<String> volList = FXCollections.observableArrayList();
         try {
-            Alert alert;
-            if (addEmployee_employeeID.getText().isEmpty()
-                    || addEmployee_firstName.getText().isEmpty()
-                    || addEmployee_lastName.getText().isEmpty()
-                    || addEmployee_gender.getSelectionModel().getSelectedItem() == null
-                    || addEmployee_phoneNum.getText().isEmpty()
-                    || addEmployee_position.getSelectionModel().getSelectedItem() == null
-                    || getData.path == null || getData.path == "") {
+            Statement statement = connect.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                String numVol = resultSet.getString("num_vol");
+                String depart = resultSet.getString("depart");
+                String destination = resultSet.getString("destination");
+                volList.add(numVol + " - " + depart + " - " + destination);
+            }
+
+            volComboBox.getItems().addAll(volList);
+
+        } catch (SQLException e) {
+            // Gérer l'erreur
+            e.printStackTrace();
+        }
+
+
+    }
+
+/*
+        volComboBox.setOnAction(event -> {
+            VolData selectedVol = volComboBox.getValue(); // Récupérer le vol sélectionné
+            if (selectedVol != null) {
+                String volId = selectedVol.getNumVol(); // Récupérer l'ID du vol
+                // Enregistrer l'ID du vol dans la table des escales ou effectuer toute autre opération nécessaire
+                champs_numero_escale.setText(volId); // Par exemple, définir l'ID du vol dans le champ de texte champs_numero_escale
+            }
+        });*/
+
+
+
+public void addVolAdd() {
+    // Obtenir la date actuelle
+    Date date = new Date();
+    java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+    String sql = "INSERT INTO vol "
+            + "(num_vol, dateDepart, heure_d, heure_a, prix, destination,depart) "
+            + "VALUES (?, ?, ?, ?, ?, ?,?)";
+
+    connect = database.connectDb();
+
+    try {
+        Alert alert;
+        // Vérifier si les champs requis sont vides ou non sélectionnés
+        if (champs_id_vol.getText().isEmpty()
+                || champs_date_vol.getValue() == null
+                || champs_herue_arrivee.getText().isEmpty()
+                || champs_heure_depart.getText().isEmpty()
+                || champs_prix_vol.getText().isEmpty()
+                || champs_depart_vol.getText().isEmpty()
+                || champs_destination_vol.getText().isEmpty()) {
+            alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please fill all required fields");
+            alert.showAndWait();
+        } else {
+            // Vérifier si le numéro de vol existe déjà dans la base de données
+            String check = "SELECT num_vol FROM vol WHERE num_vol = '"
+                    + champs_id_vol.getText() + "'";
+
+            statement = connect.createStatement();
+            result = statement.executeQuery(check);
+
+            if (result.next()) {
                 alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
+                alert.setContentText("Vol number: " + champs_id_vol.getText() + " already exists!");
                 alert.showAndWait();
             } else {
+                // Convertir le prix en entier
+                int prixVol = Integer.parseInt(champs_prix_vol.getText());
 
-                String check = "SELECT employee_id FROM employee WHERE employee_id = '"
-                        + addEmployee_employeeID.getText() + "'";
+                prepare = connect.prepareStatement(sql);
+                prepare.setString(1, champs_id_vol.getText());
+                prepare.setDate(2, sqlDate);
+                prepare.setString(3, champs_heure_depart.getText());
+                prepare.setString(4, champs_herue_arrivee.getText());
+                prepare.setInt(5, prixVol);
+                prepare.setString(6, champs_destination_vol.getText());
+                prepare.setString(7, champs_depart_vol.getText());
+                prepare.executeUpdate();
 
-                statement = connect.createStatement();
-                result = statement.executeQuery(check);
+                alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Information Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Successfully Added!");
+                alert.showAndWait();
 
-                if (result.next()) {
-                    alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Employee ID: " + addEmployee_employeeID.getText() + " was already exist!");
-                    alert.showAndWait();
-                } else {
-
-                    prepare = connect.prepareStatement(sql);
-                    prepare.setString(1, addEmployee_employeeID.getText());
-                    prepare.setString(2, addEmployee_firstName.getText());
-                    prepare.setString(3, addEmployee_lastName.getText());
-                    prepare.setString(4, (String) addEmployee_gender.getSelectionModel().getSelectedItem());
-                    prepare.setString(5, addEmployee_phoneNum.getText());
-                    prepare.setString(6, (String) addEmployee_position.getSelectionModel().getSelectedItem());
-
-                    String uri = getData.path;
-                    uri = uri.replace("\\", "\\\\");
-
-                    prepare.setString(7, uri);
-                    prepare.setString(8, String.valueOf(sqlDate));
-                    prepare.executeUpdate();
-
-                    String insertInfo = "INSERT INTO employee_info "
-                            + "(employee_id,firstName,lastName,position,salary,date) "
-                            + "VALUES(?,?,?,?,?,?)";
-
-                    prepare = connect.prepareStatement(insertInfo);
-                    prepare.setString(1, addEmployee_employeeID.getText());
-                    prepare.setString(2, addEmployee_firstName.getText());
-                    prepare.setString(3, addEmployee_lastName.getText());
-                    prepare.setString(4, (String) addEmployee_position.getSelectionModel().getSelectedItem());
-                    prepare.setString(5, "0.0");
-                    prepare.setString(6, String.valueOf(sqlDate));
-                    prepare.executeUpdate();
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Added!");
-                    alert.showAndWait();
-
-                    addEmployeeShowListData();
-                    addEmployeeReset();
-                }
+                // Réinitialiser les champs après l'ajout
+                champs_id_vol.setText("");
+                champs_date_vol.setValue(null);
+                champs_heure_depart.setText("");
+                champs_herue_arrivee.setText("");
+                champs_prix_vol.setText("");
+                champs_destination_vol.setText("");
+                champs_depart_vol.setText("");
+                addVolShowListData();
             }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+    public void addVolUpdate() {
+        // Récupérer les valeurs des champs
+        String numVol = champs_id_vol.getText();
+        LocalDate dateDepart = champs_date_vol.getValue();
+        String heureDepart = champs_heure_depart.getText();
+        String heureArrivee = champs_herue_arrivee.getText();
+        String prix = champs_prix_vol.getText();
+        String destination = champs_destination_vol.getText();
+        String depart=champs_depart_vol.getText();
+        // Vérifier si tous les champs sont remplis
+        if (numVol.isEmpty() || dateDepart == null || heureDepart.isEmpty()
+                || heureArrivee.isEmpty() || prix.isEmpty() || destination.isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please fill all fields");
+            alert.showAndWait();
+            return;
+        }
+
+        // Effectuer les opérations de mise à jour
+        try {
+            // Connexion à la base de données (à adapter selon votre code)
+            Connection connection = database.connectDb();
+
+            // Construction de la requête SQL d'update
+            String sql = "UPDATE vol SET dateDepart = ?, heure_d = ?, heure_a = ?, prix = ?, destination = ? , depart=? WHERE num_vol = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setDate(1, java.sql.Date.valueOf(dateDepart));
+            statement.setString(2, heureDepart);
+            statement.setString(3, heureArrivee);
+            statement.setString(4, prix);
+            statement.setString(5, destination);
+            statement.setString(6, depart);
+            statement.setString(7, numVol);
+
+            // Exécution de la requête
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Information Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Vol successfully updated!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Failed to update vol. Please check the provided information.");
+                alert.showAndWait();
+            }
+
+            // Fermeture de la connexion et réinitialisation des champs
+            statement.close();
+            connection.close();
+            addVolReset();
+
+            // Actualisation de l'affichage de la liste des vols
+            addVolShowListData();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-*/
     }
 
-    public void addEmployeeUpdate() {
-/*
-        String uri = getData.path;
-        uri = uri.replace("\\", "\\\\");
+    public void addVolDelete() {
+        // Récupérer la valeur du champ numVol
+        String numVol = champs_id_vol.getText();
 
-        Date date = new Date();
-        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        // Vérifier si le champ numVol est rempli
+        if (numVol.isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter the vol ID");
+            alert.showAndWait();
+            return;
+        }
 
-        String sql = "UPDATE employee SET firstName = '"
-                + addEmployee_firstName.getText() + "', lastName = '"
-                + addEmployee_lastName.getText() + "', gender = '"
-                + addEmployee_gender.getSelectionModel().getSelectedItem() + "', phoneNum = '"
-                + addEmployee_phoneNum.getText() + "', position = '"
-                + addEmployee_position.getSelectionModel().getSelectedItem() + "', image = '"
-                + uri + "', date = '" + sqlDate + "' WHERE employee_id ='"
-                + addEmployee_employeeID.getText() + "'";
-
-        connect = database.connectDb();
-
+        // Effectuer les opérations de suppression
         try {
-            Alert alert;
-            if (addEmployee_employeeID.getText().isEmpty()
-                    || addEmployee_firstName.getText().isEmpty()
-                    || addEmployee_lastName.getText().isEmpty()
-                    || addEmployee_gender.getSelectionModel().getSelectedItem() == null
-                    || addEmployee_phoneNum.getText().isEmpty()
-                    || addEmployee_position.getSelectionModel().getSelectedItem() == null
-                    || getData.path == null || getData.path == "") {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
+            // Connexion à la base de données (à adapter selon votre code)
+            Connection connection = database.connectDb();
+
+            // Construction de la requête SQL de suppression
+            String sql = "DELETE FROM vol WHERE num_vol = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, numVol);
+
+            // Exécution de la requête
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Information Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
+                alert.setContentText("Vol successfully deleted!");
                 alert.showAndWait();
             } else {
-                alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Cofirmation Message");
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
                 alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to UPDATE Employee ID: " + addEmployee_employeeID.getText() + "?");
-                Optional<ButtonType> option = alert.showAndWait();
-
-                if (option.get().equals(ButtonType.OK)) {
-                    statement = connect.createStatement();
-                    statement.executeUpdate(sql);
-
-                    double salary = 0;
-
-                    String checkData = "SELECT * FROM employee_info WHERE employee_id = '"
-                            + addEmployee_employeeID.getText() + "'";
-
-                    prepare = connect.prepareStatement(checkData);
-                    result = prepare.executeQuery();
-
-                    while (result.next()) {
-                        salary = result.getDouble("salary");
-                    }
-
-                    String updateInfo = "UPDATE employee_info SET firstName = '"
-                            + addEmployee_firstName.getText() + "', lastName = '"
-                            + addEmployee_lastName.getText() + "', position = '"
-                            + addEmployee_position.getSelectionModel().getSelectedItem()
-                            + "' WHERE employee_id = '"
-                            + addEmployee_employeeID.getText() + "'";
-
-                    prepare = connect.prepareStatement(updateInfo);
-                    prepare.executeUpdate();
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Updated!");
-                    alert.showAndWait();
-
-                    addEmployeeShowListData();
-                    addEmployeeReset();
-                }
-
+                alert.setContentText("Failed to delete vol. Please check the vol ID.");
+                alert.showAndWait();
             }
+
+            // Fermeture de la connexion et réinitialisation des champs
+            statement.close();
+            connection.close();
+            addVolReset();
+
+            // Actualisation de l'affichage de la liste des vols
+            addVolShowListData();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-*/
     }
 
-    public void addEmployeeDelete() {
-/*
-        String sql = "DELETE FROM employee WHERE employee_id = '"
-                + addEmployee_employeeID.getText() + "'";
 
-        connect = database.connectDb();
+    public void addVolReset() {
 
-        try {
-
-            Alert alert;
-            if (addEmployee_employeeID.getText().isEmpty()
-                    || addEmployee_firstName.getText().isEmpty()
-                    || addEmployee_lastName.getText().isEmpty()
-                    || addEmployee_gender.getSelectionModel().getSelectedItem() == null
-                    || addEmployee_phoneNum.getText().isEmpty()
-                    || addEmployee_position.getSelectionModel().getSelectedItem() == null
-                    || getData.path == null || getData.path == "") {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
-            } else {
-                alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Cofirmation Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to DELETE Employee ID: " + addEmployee_employeeID.getText() + "?");
-                Optional<ButtonType> option = alert.showAndWait();
-
-                if (option.get().equals(ButtonType.OK)) {
-                    statement = connect.createStatement();
-                    statement.executeUpdate(sql);
-
-                    String deleteInfo = "DELETE FROM employee_info WHERE employee_id = '"
-                            + addEmployee_employeeID.getText() + "'";
-
-                    prepare = connect.prepareStatement(deleteInfo);
-                    prepare.executeUpdate();
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Deleted!");
-                    alert.showAndWait();
-
-                    addEmployeeShowListData();
-                    addEmployeeReset();
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-*/
-    }
-
-    public void addEmployeeReset() {
-        /*
-        addEmployee_employeeID.setText("");
-        addEmployee_firstName.setText("");
-        addEmployee_lastName.setText("");
-        addEmployee_gender.getSelectionModel().clearSelection();
-        addEmployee_position.getSelectionModel().clearSelection();
-        addEmployee_phoneNum.setText("");
-        addEmployee_image.setImage(null);
-        getData.path = "";*/
+        champs_id_vol.setText("");
+        champs_date_vol.setValue(null);
+        champs_heure_depart.setText("");
+        champs_herue_arrivee.setText("");
+        champs_prix_vol.setText("");
+        champs_depart_vol.setText("");
+        champs_destination_vol.setText("");
     }
 
     public void addEmployeeInsertImage() {
@@ -605,123 +653,114 @@ public class dashboardController implements Initializable {
 
     }
 
-    public void addEmployeeSearch() {
-/*
-        FilteredList<employeeData> filter = new FilteredList<>(addEmployeeList, e -> true);
+    public void addVolSearch() {
+        FilteredList<VolData> filter = new FilteredList<>(addVolList, e -> true);
 
-        addEmployee_search.textProperty().addListener((Observable, oldValue, newValue) -> {
-
-            filter.setPredicate(predicateEmployeeData -> {
-
+        rechercher_vol1.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            filter.setPredicate(predicateVolData -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
 
                 String searchKey = newValue.toLowerCase();
 
-                if (predicateEmployeeData.getEmployeeId().toString().contains(searchKey)) {
+                if (predicateVolData.getNumVol().toLowerCase().contains(searchKey)) {
                     return true;
-                } else if (predicateEmployeeData.getFirstName().toLowerCase().contains(searchKey)) {
+                } else if (predicateVolData.getDestination().toLowerCase().contains(searchKey)) {
                     return true;
-                } else if (predicateEmployeeData.getLastName().toLowerCase().contains(searchKey)) {
+                } else if (predicateVolData.getHeureArrivee().toLowerCase().contains(searchKey)) {
                     return true;
-                } else if (predicateEmployeeData.getGender().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicateEmployeeData.getPhoneNum().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicateEmployeeData.getPosition().toLowerCase().contains(searchKey)) {
-                    return true;
-                } else if (predicateEmployeeData.getDate().toString().contains(searchKey)) {
+                } else if (String.valueOf(predicateVolData.getPrix()).contains(searchKey)) {
                     return true;
                 } else {
-                    return false;
+                    // Check date of vol
+                    LocalDate dateVol = LocalDate.parse(predicateVolData.getDateVol(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    String formattedDateVol = dateVol.format(dateFormatter);
+                    if (formattedDateVol.contains(searchKey)) {
+                        return true;
+                    }
                 }
+
+                return false;
             });
         });
 
-        SortedList<employeeData> sortList = new SortedList<>(filter);
-
-        sortList.comparatorProperty().bind(addEmployee_tableView.comparatorProperty());
-        addEmployee_tableView.setItems(sortList);
-
- */
+        SortedList<VolData> sortList = new SortedList<>(filter);
+        sortList.comparatorProperty().bind(admin_vols_tableview.comparatorProperty());
+        admin_vols_tableview.setItems(sortList);
     }
-    /*
-        public ObservableList<employeeData> addEmployeeListData() {
 
-            ObservableList<employeeData> listData = FXCollections.observableArrayList();
-            String sql = "SELECT * FROM employee";
 
-            connect = database.connectDb();
+    public ObservableList<VolData> addVolListData() {
+        ObservableList<VolData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM vol";
 
-            try {
-                prepare = connect.prepareStatement(sql);
-                result = prepare.executeQuery();
-                employeeData employeeD;
+        connect = database.connectDb();
 
-                while (result.next()) {
-                    employeeD = new employeeData(result.getInt("employee_id"),
-                            result.getString("firstName"),
-                            result.getString("lastName"),
-                            result.getString("gender"),
-                            result.getString("phoneNum"),
-                            result.getString("position"),
-                            result.getString("image"),
-                            result.getDate("date"));
-                    listData.add(employeeD);
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
 
-                }
+            while (result.next()) {
+                VolData vol = new VolData(
+                        result.getString("num_vol"),
+                        result.getString("destination"),
+                        result.getString("heure_a"),
+                        result.getString("heure_d"),
+                        result.getInt("prix"),
+                        result.getString("dateDepart"),
+                        result.getString("depart")
+                );
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                listData.add(vol);
             }
-            return listData;
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-     */
-    /*
-    private ObservableList<employeeData> addEmployeeList;
-
-    public void addEmployeeShowListData() {
-        addEmployeeList = addEmployeeListData();
-
-        addEmployee_col_employeeID.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
-        addEmployee_col_firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        addEmployee_col_lastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        addEmployee_col_gender.setCellValueFactory(new PropertyValueFactory<>("gender"));
-        addEmployee_col_phoneNum.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
-        addEmployee_col_position.setCellValueFactory(new PropertyValueFactory<>("position"));
-        addEmployee_col_date.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-        addEmployee_tableView.setItems(addEmployeeList);
-
+        return listData;
     }
-*/
-    public void addEmployeeSelect() {
-        /*
-        employeeData employeeD = addEmployee_tableView.getSelectionModel().getSelectedItem();
-        int num = addEmployee_tableView.getSelectionModel().getSelectedIndex();
 
-        if ((num - 1) < -1) {
-            return;
+
+    @FXML
+    private void addEmployeeSelect() {
+        VolData selectedVol = admin_vols_tableview.getSelectionModel().getSelectedItem();
+        if (selectedVol != null) {
+            champs_id_vol.setText(selectedVol.getNumVol());
+            champs_destination_vol.setText(selectedVol.getDestination());
+            String dateVol = selectedVol.getDateVol();
+            if (dateVol != null && !dateVol.isEmpty()) {
+                LocalDate localDate = LocalDate.parse(dateVol);
+                champs_date_vol.setValue(localDate);
+            } else {
+                champs_date_vol.setValue(null);
+            }
+
+            champs_heure_depart.setText(selectedVol.getHeureDepart());
+            champs_herue_arrivee.setText(selectedVol.getHeureArrivee());
+            champs_prix_vol.setText(Integer.toString(selectedVol.getPrix()));
+            champs_depart_vol.setText(selectedVol.getDepart());
         }
-
-        addEmployee_employeeID.setText(String.valueOf(employeeD.getEmployeeId()));
-        addEmployee_firstName.setText(employeeD.getFirstName());
-        addEmployee_lastName.setText(employeeD.getLastName());
-        addEmployee_phoneNum.setText(employeeD.getPhoneNum());
-
-        getData.path = employeeD.getImage();
-
-        String uri = "file:" + employeeD.getImage();
-
-        image = new Image(uri, 101, 127, false, true);
-        addEmployee_image.setImage(image);
-
-         */
     }
+
+    private ObservableList<VolData> addVolList;
+
+    public void addVolShowListData() {
+        addVolList = addVolListData();
+
+        id_vol1.setCellValueFactory(new PropertyValueFactory<>("numVol"));
+        depart_vol1.setCellValueFactory(new PropertyValueFactory<>("depart"));
+        destination_vol1.setCellValueFactory(new PropertyValueFactory<>("destination"));
+        date_vol1.setCellValueFactory(new PropertyValueFactory<>("dateDepart"));
+        heure_depart_vol1.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
+        heure_arrivee_vol1.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
+        prix_vol1.setCellValueFactory(new PropertyValueFactory<>("prix"));
+        date_vol1.setCellValueFactory(new PropertyValueFactory<>("dateVol"));
+
+        admin_vols_tableview.setItems(addVolList);
+    }
+
 
     public void salaryUpdate() {
 /*
@@ -820,7 +859,7 @@ public class dashboardController implements Initializable {
 
     public void salarySelect() {
 
-        employeeData employeeD = salary_tableView.getSelectionModel().getSelectedItem();
+     /*   employeeData employeeD = salary_tableView.getSelectionModel().getSelectedItem();
         int num = salary_tableView.getSelectionModel().getSelectedIndex();
 
         if ((num - 1) < -1) {
@@ -832,7 +871,7 @@ public class dashboardController implements Initializable {
         salary_lastName.setText(employeeD.getLastName());
         salary_position.setText(employeeD.getPosition());
         salary_salary.setText(String.valueOf(employeeD.getSalary()));
-
+*/
     }
 
     public void defaultNav() {
@@ -848,10 +887,8 @@ public class dashboardController implements Initializable {
     public void switchForm(ActionEvent event) {
         String role = getData.getRole();
 
-   if(role.equals("admin"))
-   {
 
-       System.out.println("le role est admin");
+
 
         if (event.getSource() == home_btn) {
             home.setVisible(true);
@@ -880,7 +917,7 @@ public class dashboardController implements Initializable {
 
             addEmployeeGendernList();
             addEmployeePositionList();
-            addEmployeeSearch();
+            addVolSearch();
 
         } else if (event.getSource() == gestion_clients) {
             home.setVisible(false);
@@ -896,6 +933,12 @@ public class dashboardController implements Initializable {
 
         }else if(event.getSource()==gestion_escales)
         {
+
+            try {
+                getVolsFromDatabase();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             home.setVisible(false);
             admin_gestion_vols.setVisible(false);
             admin_gestion_escales.setVisible(true);
@@ -905,15 +948,14 @@ public class dashboardController implements Initializable {
             gestion_vols.setStyle("-fx-background-color:transparent");
             home_btn.setStyle("-fx-background-color:transparent");
         }
-   }
-   else
-   {
-       if (event.getSource() == user_liste_vols) {
+
+
+       if (event.getSource() == listes_vols) {
 
            user_reservations.setVisible(false);
            user_liste_vols.setVisible(true);
-           user_listes_escale.setVisible(false);
-           admin_interface.setVisible(false);
+           user_listes_escales.setVisible(false);
+
            home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
            gestion_vols.setStyle("-fx-background-color:transparent");
            admin_gestion_clients.setStyle("-fx-background-color:transparent");
@@ -923,25 +965,25 @@ public class dashboardController implements Initializable {
            homeTotalInactive();
            homeChart();
 
-       } else if (event.getSource() == user_reservations) {
+       } else if (event.getSource() == vols_reservees) {
            user_reservations.setVisible(true);
            user_liste_vols.setVisible(false);
-           user_listes_escale.setVisible(false);
-           admin_interface.setVisible(false);
+           user_listes_escales.setVisible(false);
+
            gestion_vols.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
            home_btn.setStyle("-fx-background-color:transparent");
            //     salary_btn.setStyle("-fx-background-color:transparent");
 
            addEmployeeGendernList();
            addEmployeePositionList();
-           addEmployeeSearch();
+           addVolSearch();
 
-       } else if (event.getSource() == user_listes_escale) {
+       } else if (event.getSource() == user_escales_btn) {
 
            user_reservations.setVisible(false);
            user_liste_vols.setVisible(false);
-           user_listes_escale.setVisible(true);
-           admin_interface.setVisible(false);
+           user_listes_escales.setVisible(true);
+
            //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
            gestion_vols.setStyle("-fx-background-color:transparent");
            home_btn.setStyle("-fx-background-color:transparent");
@@ -950,6 +992,185 @@ public class dashboardController implements Initializable {
 
        }
    }
+
+
+    public void addEscale() {
+
+        admin_vols_tableview.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                VolData selectedProduit = admin_vols_tableview.getSelectionModel().getSelectedItem();
+                id_vol1.setText(selectedProduit.numVolProperty().get());
+                id_vol1.setId(selectedProduit.getNumVol());
+            }
+        });
+
+        String id=volComboBox.getValue();
+        System.out.println("le code est"+id);
+        String[] parts = id.split(" - ");
+        String extractedValue = parts[0];
+        if (id != null) {
+
+            Integer numVol = Integer.parseInt(extractedValue);
+            System.out.println("le code2 est"+numVol);
+            // Récupérer les autres valeurs des champs
+            String heureArrivee = champs_heure_arrivee_escale.getText();
+            String heureDepart = champs_heure_depart_escale.getText();
+            String ville = champs_ville_escale.getText();
+
+            // Effectuer l'insertion dans la base de données
+            String sql = "INSERT INTO escale (id_escale, heure_d, heure_a, ville, id_vol) VALUES (?, ?, ?, ?, ?)";
+
+            try {
+                connect = database.connectDb();
+                prepare = connect.prepareStatement(sql);
+                prepare.setString(1, champs_numero_escale.getText());
+                prepare.setString(2, heureDepart);
+                prepare.setString(3, heureArrivee);
+                prepare.setString(4, ville);
+                prepare.setInt(5, numVol);
+                prepare.executeUpdate();
+
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Information Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Successfully Added!");
+                alert.showAndWait();
+
+                // Réinitialiser les champs après l'ajout
+                champs_numero_escale.setText("");
+                champs_heure_arrivee_escale.setText("");
+                champs_heure_depart_escale.setText("");
+                champs_ville_escale.setText("");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un vol.");
+            alert.showAndWait();
+        }
+    }
+//a refaire
+    public void deleteEscale() {
+        String numVol = champs_numero_escale.getText();
+
+        // Vérifier si le champ numVol est rempli
+        if (numVol.isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter the escale ID");
+            alert.showAndWait();
+            return;
+        }
+
+        // Effectuer les opérations de suppression
+        try {
+            // Connexion à la base de données (à adapter selon votre code)
+            Connection connection = database.connectDb();
+
+            // Construction de la requête SQL de suppression
+            String sql = "DELETE FROM escale WHERE id_escale = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, numVol);
+
+            // Exécution de la requête
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Information Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Escale successfully deleted!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Failed to delete escale. Please check the vol ID.");
+                alert.showAndWait();
+            }
+
+            // Fermeture de la connexion et réinitialisation des champs
+            statement.close();
+            connection.close();
+           // addEscaleReset();
+
+            // Actualisation de l'affichage de la liste des escales
+            addEscaleShowListData();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+  public void annulerEscale()
+    {
+
+    }
+
+    public ObservableList<EscaleData> addEscaleListData() {
+        ObservableList<EscaleData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT num_vol, v.depart, v.destination, e.heure_d, e.heure_a, e.ville ,e.id_escale FROM vol v JOIN escale e ON num_vol = e.id_vol";
+
+        connect = database.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            while (result.next()) {
+                String vol = result.getString("num_vol") + " - " + result.getString("depart") + " to " + result.getString("destination");
+
+                EscaleData escale = new EscaleData(
+                        result.getString("id_escale"),
+                        vol,
+
+                        result.getString("heure_a"),
+                        result.getString("heure_d"),
+                        result.getString("ville")
+                );
+
+                listData.add(escale);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
+
+
+    private ObservableList<EscaleData> addEscaleList;
+
+    public void addEscaleShowListData() {
+        addEscaleList = addEscaleListData();
+
+        vol_escale.setCellValueFactory(new PropertyValueFactory<>("vol"));
+
+        heure_arrivee_escale1.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
+        heure_depart_escale1.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
+        ville_escale1.setCellValueFactory(new PropertyValueFactory<>("ville"));
+
+        escales_tableview.setItems(addEscaleList);
+    }
+
+    @FXML
+    private void addEscaleSelect() {
+        EscaleData selectedEscale = escales_tableview.getSelectionModel().getSelectedItem();
+        if (selectedEscale != null) {
+            champs_numero_escale.setText(selectedEscale.getIdEscale());
+            champs_heure_arrivee_escale.setText(selectedEscale.getHeureArrivee());
+            champs_heure_depart_escale.setText(selectedEscale.getHeureDepart());
+            champs_ville_escale.setText(selectedEscale.getVille());
+
+            // Set the selected vol in the ComboBox
+            volComboBox.getSelectionModel().select(selectedEscale.getVol());
+        }
     }
 
     private double x = 0;
@@ -1008,6 +1229,21 @@ public class dashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
+        String role = getData.getRole();
+
+        if(role.equals("admin")) {
+            home.setVisible(true);
+            admin_interface.setVisible(true);
+            client_interface.setVisible(false);
+        }else
+        {
+            admin_interface.setVisible(false);
+            client_interface.setVisible(true);
+        }
+
+
         displayUsername();
         defaultNav();
 
@@ -1016,9 +1252,12 @@ public class dashboardController implements Initializable {
         homeTotalInactive();
         homeChart();
 
-    //    addEmployeeShowListData();
+       addVolShowListData();
+       addEscaleShowListData();
         addEmployeeGendernList();
         addEmployeePositionList();
+
+
 
         salaryShowListData();
     }

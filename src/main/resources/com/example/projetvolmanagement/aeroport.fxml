@@ -17,6 +17,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.projetvolmanagement.dashboardController">
    <children>
       <AnchorPane fx:id="client_interface" prefHeight="200.0" prefWidth="200.0" stylesheets="@dashboardDessign.css">
@@ -72,7 +74,7 @@
                     </columns>
                   </TableView>
                   <Button fx:id="reserver_vol" layoutX="330.0" layoutY="494.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Reserver" />
-                  <TextField fx:id="recherche_vol" layoutX="14.0" layoutY="14.0" onKeyTyped="#addEmployeeSearch" prefHeight="30.0" prefWidth="277.0" promptText="Seach" styleClass="search" stylesheets="@dashboardDessign.css" />
+                  <TextField fx:id="recherche_vol" layoutX="14.0" layoutY="14.0" onKeyTyped="#addVolSearch" prefHeight="30.0" prefWidth="277.0" promptText="Seach" styleClass="search" stylesheets="@dashboardDessign.css" />
                   <FontAwesomeIcon glyphName="SEARCH" layoutX="21.0" layoutY="35.0" size="1.5em" />
                </children>
             </AnchorPane>
@@ -97,7 +99,7 @@
                <children>
                   <TableView fx:id="user_escales_tableview" layoutX="35.0" layoutY="14.0" prefHeight="455.0" prefWidth="668.0">
                     <columns>
-                      <TableColumn fx:id="id_escale" prefWidth="115.19998168945312" text="ID Escale" />
+
                       <TableColumn fx:id="heure_arrivee" prefWidth="164.0" text="Heure Arrivée" />
                         <TableColumn fx:id="heure_depart" prefWidth="188.800048828125" text="Heure Départ" />
                         <TableColumn fx:id="ville" prefWidth="202.39990234375" text="Ville" />
@@ -160,7 +162,7 @@
                         <TableColumn fx:id="prix_vol1" prefWidth="114.39990234375" text="Prix" />
                      </columns>
                   </TableView>
-                  <TextField fx:id="rechercher_vol1" layoutX="29.0" layoutY="25.0" onKeyTyped="#addEmployeeSearch" prefHeight="30.0" prefWidth="277.0" promptText="rechercher un vol" styleClass="search" stylesheets="@dashboardDessign.css" />
+                  <TextField fx:id="rechercher_vol1" layoutX="29.0" layoutY="25.0" onKeyTyped="#addVolSearch" prefHeight="30.0" prefWidth="277.0" promptText="rechercher un vol" styleClass="search" stylesheets="@dashboardDessign.css" />
                   <FontAwesomeIcon glyphName="SEARCH" layoutX="36.0" layoutY="46.0" size="1.5em" />
                   <Label layoutX="26.0" layoutY="342.0" text="Numero de Vol:">
                      <font>
@@ -189,10 +191,10 @@
                         <Font name="Tahoma" size="14.0" />
                      </font>
                   </Label>
-                  <Button fx:id="ajouter_vol" layoutX="96.0" layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Ajouter" />
-                  <Button fx:id="maj_vol" layoutX="270.0" layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Mise a jour" />
-                  <Button fx:id="supprimer_vol" layoutX="600.0" layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Delete" />
-                  <Button fx:id="annuler" layoutX="437.0" layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
+                  <Button fx:id="ajouter_vol" onAction="#addVolAdd" layoutX="96.0" layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Ajouter" />
+                  <Button fx:id="maj_vol" layoutX="270.0" onAction="#addVolUpdate"   layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Mise a jour" />
+                  <Button fx:id="supprimer_vol" layoutX="600.0" onAction="#addVolDelete"   layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Delete" />
+                  <Button fx:id="annuler" layoutX="437.0" layoutY="528.0" onAction="#addVolReset"  mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
                   <Text layoutX="317.0" layoutY="330.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ajouter un vol">
                      <font>
                         <Font size="18.0" />
@@ -233,12 +235,14 @@
             </AnchorPane>
             <AnchorPane fx:id="admin_gestion_escales" layoutX="247.0" prefHeight="607.0" prefWidth="756.0" visible="false">
                <children>
-                  <TableView fx:id="escales_tableview" layoutX="274.0" layoutY="2.0" onMouseClicked="#salarySelect" prefHeight="600.0" prefWidth="482.0" stylesheets="@dashboardDessign.css">
+                  <TableView fx:id="escales_tableview" layoutX="274.0" layoutY="2.0" onMouseClicked="#addEscaleSelect" prefHeight="600.0" prefWidth="482.0" stylesheets="@dashboardDessign.css">
                      <columns>
-                        <TableColumn fx:id="id_escale1" prefWidth="114.39996337890625" text="Numero d'Escale" />
+
+                        <TableColumn fx:id="vol_escale" prefWidth="114.39996337890625" text="vol_escale" />
                         <TableColumn fx:id="heure_arrivee_escale1" prefWidth="132.800048828125" text="Heure Arriveé" />
                         <TableColumn fx:id="heure_depart_escale1" prefWidth="144.0001220703125" text="Heure Départ" />
                         <TableColumn fx:id="ville_escale1" prefWidth="87.99993896484375" text="Ville" />
+
                      </columns>
                   </TableView>
                   <TextField fx:id="champs_numero_escale" layoutX="44.0" layoutY="84.0" prefHeight="25.0" prefWidth="172.0" styleClass="textfield" stylesheets="@dashboardDessign.css" />
@@ -254,6 +258,7 @@
                   </Label>
                   <TextField fx:id="champs_heure_arrivee_escale" layoutX="44.0" layoutY="174.0" prefHeight="25.0" prefWidth="172.0" styleClass="textfield" stylesheets="@dashboardDessign.css" />
                   <TextField fx:id="champs_heure_depart_escale" layoutX="44.0" layoutY="269.0" prefHeight="25.0" prefWidth="172.0" styleClass="textfield" stylesheets="@dashboardDessign.css" />
+
                   <Label layoutX="47.0" layoutY="235.0" text="Heure Départ:">
                      <font>
                         <Font name="Tahoma" size="14.0" />
@@ -265,9 +270,16 @@
                         <Font name="Tahoma" size="14.0" />
                      </font>
                   </Label>
-                  <Button fx:id="ajouter_escale" layoutX="25.0" layoutY="443.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="74.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Ajouter" />
-                  <Button fx:id="supprimer_escale" layoutX="89.0" layoutY="518.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Delete" />
-                  <Button fx:id="annuler_escale" layoutX="158.0" layoutY="443.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="74.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
+                  <ComboBox fx:id="volComboBox" layoutX="44.0" layoutY="100.0" prefHeight="25.0" prefWidth="172.0" promptText="Sélectionner un vol" >
+                  <items>
+                     <FXCollections fx:factory="observableArrayList">
+
+                     </FXCollections>
+                  </items>
+               </ComboBox>
+                  <Button fx:id="ajouter_escale" onAction="#addEscale" layoutX="25.0" layoutY="443.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="74.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Ajouter" />
+                  <Button fx:id="supprimer_escale"  onAction="#deleteEscale" layoutX="89.0" layoutY="518.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Delete" />
+                  <Button fx:id="annuler_escale"  onAction="#annulerEscale" layoutX="158.0" layoutY="443.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="74.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
                </children>
             </AnchorPane>
             <AnchorPane fx:id="home" layoutX="244.0" prefHeight="600.0" prefWidth="756.0" visible="false">
