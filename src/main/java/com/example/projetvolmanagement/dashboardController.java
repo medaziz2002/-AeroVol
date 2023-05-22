@@ -73,6 +73,9 @@ public class dashboardController implements Initializable {
     private Label username;
 
     @FXML
+    private Label username1;
+
+    @FXML
     private Button home_btn;
 
     @FXML
@@ -881,6 +884,7 @@ public void addVolAdd() {
     public void displayUsername() {
 
         username.setText(getData.login_username);
+        username1.setText(getData.login_username);
         System.out.println("le username est hhhhhhhhhhhhh "+username);
     }
 
@@ -1041,6 +1045,8 @@ public void addVolAdd() {
                 champs_heure_arrivee_escale.setText("");
                 champs_heure_depart_escale.setText("");
                 champs_ville_escale.setText("");
+                volComboBox.getSelectionModel().clearSelection();
+                addEscaleShowListData();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1050,6 +1056,7 @@ public void addVolAdd() {
             alert.setHeaderText(null);
             alert.setContentText("Veuillez sélectionner un vol.");
             alert.showAndWait();
+
         }
     }
 //a refaire
@@ -1096,7 +1103,8 @@ public void addVolAdd() {
             // Fermeture de la connexion et réinitialisation des champs
             statement.close();
             connection.close();
-           // addEscaleReset();
+           addEscaleReset();
+
 
             // Actualisation de l'affichage de la liste des escales
             addEscaleShowListData();
@@ -1171,6 +1179,15 @@ public void addVolAdd() {
             // Set the selected vol in the ComboBox
             volComboBox.getSelectionModel().select(selectedEscale.getVol());
         }
+    }
+
+
+    public void addEscaleReset() {
+        champs_numero_escale.setText("");
+        champs_heure_arrivee_escale.setText("");
+        champs_heure_depart_escale.setText("");
+        champs_ville_escale.setText("");
+        volComboBox.getSelectionModel().clearSelection();
     }
 
     private double x = 0;

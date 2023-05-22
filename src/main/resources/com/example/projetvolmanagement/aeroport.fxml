@@ -194,7 +194,7 @@
                   <Button fx:id="ajouter_vol" onAction="#addVolAdd" layoutX="96.0" layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Ajouter" />
                   <Button fx:id="maj_vol" layoutX="270.0" onAction="#addVolUpdate"   layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Mise a jour" />
                   <Button fx:id="supprimer_vol" layoutX="600.0" onAction="#addVolDelete"   layoutY="528.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Delete" />
-                  <Button fx:id="annuler" layoutX="437.0" layoutY="528.0" onAction="#addVolReset"  mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
+                  <Button fx:id="annuler" layoutX="437.0" layoutY="528.0" onAction="#addEscaleReset"  mnemonicParsing="false" prefHeight="41.0" prefWidth="94.0" styleClass="clear-btn" stylesheets="@dashboardDessign.css" text="Annuler" />
                   <Text layoutX="317.0" layoutY="330.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ajouter un vol">
                      <font>
                         <Font size="18.0" />
