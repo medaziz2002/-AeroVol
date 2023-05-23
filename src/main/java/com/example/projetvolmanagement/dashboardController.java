@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -30,6 +31,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -108,6 +110,9 @@ public class dashboardController implements Initializable {
     @FXML
     private Label username;
 
+
+    @FXML
+    private Label home_totale_revenu ;
     @FXML
     private Label username1;
 
@@ -342,6 +347,9 @@ public class dashboardController implements Initializable {
     @FXML
     private Label home_pays;
 
+    @FXML
+    private Label  home_totale_clients;
+
 //ligne
     @FXML
     private TableView<ReservationData> gestion_clients_tableview;
@@ -371,6 +379,78 @@ public class dashboardController implements Initializable {
 
     private Image image;
 
+
+    public void homeTotalClients() {
+        String sql = "SELECT COUNT(client_id) AS totalClients FROM reservation WHERE status = true";
+
+        connect = database.connectDb();
+        int totalClients = 0;
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            if (result.next()) {
+                totalClients = result.getInt("totalClients");
+            }
+
+            home_totale_clients.setText(String.valueOf(totalClients));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void homeTotalRevenue() {
+        String sql = "SELECT SUM(v.prix) AS totalRevenue " +
+                "FROM vol v, reservation r " +
+                "WHERE r.vol_num_vol = v.num_vol " +
+                "AND r.status = true " +
+                "AND YEAR(v.dateDepart) = YEAR(CURDATE())";
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = database.connectDb();
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+
+            double totalRevenue = 0;
+
+            if (resultSet.next()) {
+                totalRevenue = resultSet.getDouble("totalRevenue");
+            }
+
+            home_totale_revenu.setText(String.valueOf(totalRevenue));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Fermer les ressources de la base de données
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public void homeTotalEmployees() {
 /*
         String sql = "SELECT COUNT(num_vol) FROM vol";
@@ -394,10 +474,13 @@ public class dashboardController implements Initializable {
 */
     }
     public void homePaysLaPlusVisite() {
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Ajouter 1 car les mois sont indexés à partir de 0 dans Calendar
+
         String sql = "SELECT destination, COUNT(*) AS visits " +
                 "FROM vol " +
                 "JOIN reservation ON reservation.vol_num_vol = vol.num_vol " +
-                "WHERE reservation.status = true " +
+                "WHERE reservation.status = true AND MONTH(vol.dateDepart) = ? " +
                 "GROUP BY destination " +
                 "ORDER BY visits DESC " +
                 "LIMIT 1";
@@ -409,6 +492,7 @@ public class dashboardController implements Initializable {
         try {
             connection = database.connectDb();
             statement = connection.prepareStatement(sql);
+            statement.setInt(1, currentMonth); // Passer la valeur du mois actuel au paramètre de la requête
             resultSet = statement.executeQuery();
 
             String paysPlusVisite = "";
@@ -446,6 +530,7 @@ public class dashboardController implements Initializable {
             }
         }
     }
+
 
     public void homeEmployeeTotalPresent() {
 /*
@@ -490,10 +575,10 @@ public class dashboardController implements Initializable {
     }
 
     public void homeChart() {
-/*
+
         home_chart.getData().clear();
 
-        String sql = "SELECT dateDepart, COUNT(id) FROM vol GROUP BY dateDepart ORDER BY TIMESTAMP(dateDepart) ASC LIMIT 7";
+        String sql = "SELECT dateDepart, COUNT(*) FROM vol GROUP BY dateDepart ORDER BY TIMESTAMP(dateDepart) ASC LIMIT 7";
 
         connect = database.connectDb();
 
@@ -512,7 +597,7 @@ public class dashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-*/
+
     }
 
 
@@ -624,6 +709,7 @@ public void addVolAdd() {
                 champs_destination_vol.setText("");
                 champs_depart_vol.setText("");
                 addVolShowListData();
+                homeChart();
             }
         }
     } catch (Exception e) {
@@ -1775,6 +1861,8 @@ public void addVolAdd() {
                 EnvoyerEmail test = new EnvoyerEmail();
                 test.envoyer(email);
                 homePaysLaPlusVisite();
+                homeTotalClients();
+                homeTotalRevenue();
             } else {
                 // La mise à jour a échoué, afficher un message d'erreur ou prendre d'autres mesures nécessaires
             }
@@ -1923,7 +2011,8 @@ public void addVolAdd() {
         populateVolTableView();
         retrieveReservationDataListAdmin();
         homePaysLaPlusVisite();
-
+        homeTotalClients();
+        homeTotalRevenue();
     }
 
 }
