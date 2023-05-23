@@ -1,5 +1,7 @@
 package com.example.projetvolmanagement;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -9,13 +11,14 @@ public class EscaleData {
     private StringProperty heureDepart;
     private StringProperty ville;
     private StringProperty vol;
-
-    public EscaleData(String idEscale , String vol,String heureArrivee, String heureDepart, String ville) {
+    private IntegerProperty durre;
+    public EscaleData(String idEscale , String vol,String heureArrivee, String heureDepart, String ville,Integer durre) {
         this.idEscale=new SimpleStringProperty(idEscale);
         this.vol = new SimpleStringProperty(vol);
         this.heureArrivee = new SimpleStringProperty(heureArrivee);
         this.heureDepart = new SimpleStringProperty(heureDepart);
         this.ville = new SimpleStringProperty(ville);
+        this.durre=new SimpleIntegerProperty(durre) ;
     }
 
     public EscaleData(String idEscale,String heureArrivee, String heureDepart, String ville) {
@@ -23,6 +26,17 @@ public class EscaleData {
         this.heureArrivee = new SimpleStringProperty(heureArrivee);
         this.heureDepart = new SimpleStringProperty(heureDepart);
         this.ville = new SimpleStringProperty(ville);
+    }
+    public Integer getDurre() {
+        return durre.get();
+    }
+
+    public void setDuree(Integer durre) {
+        this.durre.set(durre);
+    }
+
+    public IntegerProperty dureeProperty() {
+        return durre;
     }
 
 

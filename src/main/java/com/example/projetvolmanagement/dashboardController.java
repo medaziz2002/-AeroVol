@@ -4,11 +4,16 @@ package com.example.projetvolmanagement;
 
 import java.net.URL;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -329,6 +334,8 @@ public class dashboardController implements Initializable {
 
     @FXML
     private TableColumn<EscaleData, String> ville_escale1;
+    @FXML
+    private TableColumn<EscaleData, Integer> durre;
 // Définissez les autres identifiants nécessaires pour les autres composants
     @FXML
     private TextField id_escale;
@@ -1356,14 +1363,32 @@ public void addVolAdd() {
 
             while (result.next()) {
                 String vol = result.getString("num_vol") + " - " + result.getString("depart") + " to " + result.getString("destination");
+                String heureDepart = result.getString("heure_d");
+                String heureArrivee = result.getString("heure_a");
+                String ville = result.getString("ville");
+
+                int durationInMinutes;
+
+                if (heureDepart.length() >= 5 && heureArrivee.length() >= 5) {
+                    // Extract hours and minutes from the time strings
+                    int departHour = Integer.parseInt(heureDepart.substring(0, 2));
+                    int departMinute = Integer.parseInt(heureDepart.substring(3, 5));
+                    int arriveHour = Integer.parseInt(heureArrivee.substring(0, 2));
+                    int arriveMinute = Integer.parseInt(heureArrivee.substring(3, 5));
+                    durationInMinutes = (departHour * 60 + departMinute) - (arriveHour * 60 + arriveMinute);
+                } else {
+                    int departHour = Integer.parseInt(heureDepart);
+                    int arriveHour = Integer.parseInt(heureArrivee);
+                    durationInMinutes = (departHour * 60) - (arriveHour * 60);
+                }
 
                 EscaleData escale = new EscaleData(
                         result.getString("id_escale"),
                         vol,
-
-                        result.getString("heure_a"),
-                        result.getString("heure_d"),
-                        result.getString("ville")
+                        heureArrivee,
+                        heureDepart,
+                        ville,
+                        durationInMinutes
                 );
 
                 listData.add(escale);
@@ -1378,6 +1403,7 @@ public void addVolAdd() {
 
 
 
+
     private ObservableList<EscaleData> addEscaleList;
 
     public void addEscaleShowListData() {
@@ -1388,6 +1414,7 @@ public void addVolAdd() {
         heure_arrivee_escale1.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
         heure_depart_escale1.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
         ville_escale1.setCellValueFactory(new PropertyValueFactory<>("ville"));
+        durre.setCellValueFactory(new PropertyValueFactory<>("durre"));
 
         escales_tableview.setItems(addEscaleList);
     }

@@ -93,7 +93,7 @@
                   <Button fx:id="supprimer_reservation" layoutX="305.0" layoutY="516.0" mnemonicParsing="false" onAction="#supprimerReservation" prefHeight="42.0" prefWidth="148.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Supprimer" />
                   <Button fx:id="user_escales_btn" layoutX="108.0" layoutY="516.0" mnemonicParsing="false" onAction="#VoirEscale" prefHeight="42.0" prefWidth="161.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Consulter Escales" />
                   <Button fx:id="telecharger_ticket" layoutX="499.0" layoutY="516.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="42.0" prefWidth="161.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="telecharger ticket" />
-                  <ComboBox fx:id="volComboBox" layoutX="22.0" layoutY="25.0" prefHeight="35.0" prefWidth="211.0" promptText="Sélectionner un vol">
+                  <ComboBox fx:id="volComboBox1" layoutX="22.0" layoutY="25.0" prefHeight="35.0" prefWidth="211.0" promptText="Sélectionner un vol">
                   <items>
                      <FXCollections fx:factory="observableArrayList">
 
@@ -110,7 +110,7 @@
                       <TableColumn fx:id="heure_arrivee" prefWidth="164.0" text="Heure Arrivée" />
                         <TableColumn fx:id="heure_depart" prefWidth="188.800048828125" text="Heure Départ" />
                         <TableColumn fx:id="ville" prefWidth="202.39990234375" text="Ville" />
-                        <TableColumn prefWidth="110.39990234375" text="Durée" />
+                        <TableColumn  prefWidth="110.39990234375" text="Durée" />
                     </columns>
                   </TableView>
                </children>
@@ -242,14 +242,14 @@
             </AnchorPane>
             <AnchorPane fx:id="admin_gestion_escales" layoutX="247.0" prefHeight="607.0" prefWidth="756.0">
                <children>
-                  <TableView fx:id="duree_reservation" layoutX="267.0" layoutY="4.0" onMouseClicked="#addEscaleSelect" prefHeight="600.0" prefWidth="487.0" stylesheets="@dashboardDessign.css">
+                  <TableView fx:id="escales_tableview" layoutX="267.0" layoutY="4.0" onMouseClicked="#addEscaleSelect" prefHeight="600.0" prefWidth="487.0" stylesheets="@dashboardDessign.css">
                      <columns>
 
                         <TableColumn fx:id="vol_escale" prefWidth="114.39996337890625" text="vol_escale" />
                         <TableColumn fx:id="heure_arrivee_escale1" prefWidth="84.79998779296875" text="Heure Arriveé" />
                         <TableColumn fx:id="heure_depart_escale1" prefWidth="102.4000244140625" text="Heure Départ" />
                         <TableColumn fx:id="ville_escale1" prefWidth="92.0" text="Ville" />
-                        <TableColumn prefWidth="91.99998779296874" text="Durée" />
+                        <TableColumn fx:id="durre"  prefWidth="91.99998779296874" text="Durée" />
 
                      </columns>
                   </TableView>
@@ -286,6 +286,11 @@
                      </font>
                   </Label>
                   <Button fx:id="maj_escale" layoutX="147.0" layoutY="443.0" mnemonicParsing="false" onAction="#addEscaleReset" prefHeight="35.0" prefWidth="89.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Mise a jour" />
+                  <ComboBox fx:id="volComboBox" layoutX="40.0" layoutY="153.0" prefHeight="30.0" prefWidth="180.0" promptText="Sélectionner un vol">
+                     <items>
+                        <FXCollections fx:factory="observableArrayList" />
+                     </items>
+                  </ComboBox>
                </children>
             </AnchorPane>
             <AnchorPane fx:id="home" layoutX="244.0" prefHeight="600.0" prefWidth="756.0" visible="false">
