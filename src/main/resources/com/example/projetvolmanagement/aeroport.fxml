@@ -285,7 +285,7 @@
                         <Font name="Tahoma" size="14.0" />
                      </font>
                   </Label>
-                  <Button fx:id="maj_escale" layoutX="147.0" layoutY="443.0" mnemonicParsing="false" onAction="#addEscaleReset" prefHeight="35.0" prefWidth="89.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Mise a jour" />
+                  <Button fx:id="maj_escale" layoutX="147.0" layoutY="443.0" mnemonicParsing="false" onAction="#addEscaleUpdate" prefHeight="35.0" prefWidth="89.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Mise a jour" />
                   <ComboBox fx:id="volComboBox" layoutX="40.0" layoutY="153.0" prefHeight="30.0" prefWidth="180.0" promptText="Sélectionner un vol">
                      <items>
                         <FXCollections fx:factory="observableArrayList" />

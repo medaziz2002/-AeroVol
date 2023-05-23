@@ -1402,6 +1402,66 @@ public void addVolAdd() {
 
 
 
+    public void addEscaleUpdate() {
+        // Récupérer les valeurs des champs
+        String numEscale = champs_numero_escale.getText();
+        String heureDepart = champs_heure_depart_escale.getText();
+        String heureArrivee = champs_heure_arrivee_escale.getText();
+        String ville = champs_ville_escale.getText();
+
+        // Vérifier si tous les champs sont remplis
+        if (numEscale.isEmpty() || heureDepart.isEmpty()
+                || heureArrivee.isEmpty() || ville.isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please fill all fields");
+            alert.showAndWait();
+            return;
+        }
+
+        // Effectuer les opérations de mise à jour
+        try {
+            // Connexion à la base de données (à adapter selon votre code)
+            Connection connection = database.connectDb();
+
+            // Construction de la requête SQL d'update
+            String sql = "UPDATE escale SET heure_d = ?, heure_a = ?, ville = ? WHERE id_escale = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, heureDepart);
+            statement.setString(2, heureArrivee);
+            statement.setString(3, ville);
+            statement.setString(4, numEscale);
+
+            // Exécution de la requête
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Information Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Escale successfully updated!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Failed to update escale. Please check the provided information.");
+                alert.showAndWait();
+            }
+
+            // Fermeture de la connexion et réinitialisation des champs
+            statement.close();
+            connection.close();
+            addEscaleReset();
+
+            // Actualisation de l'affichage de la liste des escales
+            addEscaleShowListData();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private ObservableList<EscaleData> addEscaleList;
