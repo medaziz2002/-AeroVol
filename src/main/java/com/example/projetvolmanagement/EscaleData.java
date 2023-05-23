@@ -18,6 +18,13 @@ public class EscaleData {
         this.ville = new SimpleStringProperty(ville);
     }
 
+    public EscaleData(String idEscale,String heureArrivee, String heureDepart, String ville) {
+        this.idEscale=new SimpleStringProperty(idEscale);
+        this.heureArrivee = new SimpleStringProperty(heureArrivee);
+        this.heureDepart = new SimpleStringProperty(heureDepart);
+        this.ville = new SimpleStringProperty(ville);
+    }
+
 
     public String getIdEscale() {
         return idEscale.get();

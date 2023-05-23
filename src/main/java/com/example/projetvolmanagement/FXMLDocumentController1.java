@@ -2,6 +2,7 @@ package com.example.projetvolmanagement;
 
 
 
+import java.io.SyncFailedException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -43,6 +44,9 @@ public class FXMLDocumentController1 implements Initializable {
 
     @FXML
     private TextField login_username;
+
+    @FXML
+    private TextField email;
 
     @FXML
     private PasswordField login_password;
@@ -161,7 +165,7 @@ public class FXMLDocumentController1 implements Initializable {
         if (login_username.getText().isEmpty() || login_password.getText().isEmpty()) {
             alert.errorMessage("Incorrect Username/Password");
         } else {
-            String selectData = "SELECT role FROM users WHERE "
+            String selectData = "SELECT user_id,role,email FROM users WHERE "
                     + "username = ? and password = ?"; // users IS OUR TABLE NAME
 
 
@@ -189,11 +193,14 @@ public class FXMLDocumentController1 implements Initializable {
                     // ONCE ALL DATA THAT USERS INSERT ARE CORRECT, THEN WE WILL PROCEED TO OUR MAIN FORM
 
 
-
                     String userRole = result.getString("role");
                     getData.setRole(userRole);
-
+                    getData.email = result.getString("email");
                     getData.login_username = login_username.getText();
+                    Integer userId=result.getInt("user_id");
+                    getData.setUserId(userId);
+                    getData.userId=userId.intValue();
+
 
                     Parent root = FXMLLoader.load(getClass().getResource("aeroport.fxml"));
                     Stage stage = new Stage();

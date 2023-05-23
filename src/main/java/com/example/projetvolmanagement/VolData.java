@@ -11,6 +11,8 @@ public class VolData {
     private StringProperty dateVol;
     private StringProperty depart;
 
+    private IntegerProperty nbEscale;
+
     public VolData(String numVol, String destination, String heureArrivee, String heureDepart, int prix, String dateVol,String depart) {
         this.numVol = new SimpleStringProperty(numVol);
         this.destination = new SimpleStringProperty(destination);
@@ -21,6 +23,17 @@ public class VolData {
         this.depart=new SimpleStringProperty(depart);
     }
 
+
+    public VolData(String numVol, String destination, String heureArrivee, String heureDepart, int prix, String dateVol,String depart,int nbEscale) {
+        this.numVol = new SimpleStringProperty(numVol);
+        this.destination = new SimpleStringProperty(destination);
+        this.heureArrivee = new SimpleStringProperty(heureArrivee);
+        this.heureDepart = new SimpleStringProperty(heureDepart);
+        this.prix = new SimpleIntegerProperty(prix);
+        this.dateVol = new SimpleStringProperty(dateVol);
+        this.depart=new SimpleStringProperty(depart);
+        this.nbEscale=new SimpleIntegerProperty(nbEscale);
+    }
     public String getNumVol() {
         return numVol.get();
     }
@@ -28,6 +41,7 @@ public class VolData {
     public void setNumVol(String numVol) {
         this.numVol.set(numVol);
     }
+
     public String getDepart() {
         return depart.get();
     }
@@ -84,6 +98,14 @@ public class VolData {
 
     public int getPrix() {
         return prix.get();
+    }
+
+    public void setNbEscale(int nbEscale) {
+        this.nbEscale.set(nbEscale);
+    }
+
+    public int getNbEscale() {
+        return nbEscale.get();
     }
 
     public void setPrix(int prix) {

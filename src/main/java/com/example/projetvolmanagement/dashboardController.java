@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,13 +32,39 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 
 public class dashboardController implements Initializable {
 
     @FXML
     private AnchorPane main_form;
+    @FXML
+    private TableView<VolData> user_vols_tableview;
 
+    @FXML
+    private TableColumn<VolData, String> id_vol;
+
+    @FXML
+    private TableColumn<VolData, String> depart_vol;
+
+    @FXML
+    private TableColumn<VolData, String> destination_vol;
+
+    @FXML
+    private TableColumn<VolData, String> date_depart_vol;
+
+    @FXML
+    private TableColumn<VolData, String> heure_depart_vol;
+
+    @FXML
+    private TableColumn<VolData, String> heure_arrivee_vol;
+
+    @FXML
+    private TableColumn<VolData, Integer> prix_vol;
+
+    @FXML
+    private TableColumn<VolData, Integer> escales_vol;
 
     @FXML
     private AnchorPane admin_gestion_vols;
@@ -76,6 +104,9 @@ public class dashboardController implements Initializable {
     private Label username1;
 
     @FXML
+    private Label email;
+
+    @FXML
     private Button home_btn;
 
     @FXML
@@ -96,6 +127,20 @@ public class dashboardController implements Initializable {
     private Button gestion_clients;
     @FXML
     private Button logout;
+
+
+    @FXML
+    private TableView<EscaleData> user_escales_tableview;
+
+    @FXML
+    private TableColumn<EscaleData, String> heure_arrivee;
+
+    @FXML
+    private TableColumn<EscaleData, String> heure_depart;
+
+    @FXML
+    private TableColumn<EscaleData, String> ville;
+
 
     @FXML
     private AnchorPane home;
@@ -135,6 +180,26 @@ public class dashboardController implements Initializable {
     private TextField champs_destination_vol;
 
 
+    @FXML
+    private TableView<ReservationData> user_reservations_tableview;
+
+    @FXML
+    private TableColumn<ReservationData, Integer> id_reservation;
+
+    @FXML
+    private TableColumn<ReservationData, Integer> id_vol_reservation;
+
+    @FXML
+    private TableColumn<ReservationData, String> destination;
+
+    @FXML
+    private TableColumn<ReservationData, LocalDate> date_vol;
+
+    @FXML
+    private TableColumn<ReservationData, Double> prix;
+
+    @FXML
+    private TableColumn<ReservationData, String> status;
 
 
     @FXML
@@ -382,7 +447,7 @@ public class dashboardController implements Initializable {
                 String destination = resultSet.getString("destination");
                 volList.add(numVol + " - " + depart + " - " + destination);
             }
-
+            volComboBox.getItems().clear();
             volComboBox.getItems().addAll(volList);
 
         } catch (SQLException e) {
@@ -726,6 +791,75 @@ public void addVolAdd() {
     }
 
 
+    public ObservableList<VolData> addVolListCountEscale() {
+        ObservableList<VolData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT COUNT(e.id_escale) AS nbEscale, v.num_vol, v.dateDepart, v.heure_a, v.heure_d, v.prix, v.depart, v.destination " +
+                "FROM vol v JOIN escale e ON v.num_vol = e.id_vol " +
+                "GROUP BY v.num_vol";
+
+
+        connect = database.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+
+            while (result.next()) {
+                Integer escale=result.getInt("nbEscale");
+                System.out.println("le depart"+result.getString("dateDepart"));
+                VolData vol = new VolData(
+                        result.getString("num_vol"),
+                        result.getString("destination"),
+                        result.getString("heure_a"),
+                        result.getString("heure_d"),
+                        result.getInt("prix"),
+                        result.getString("dateDepart"),
+                        result.getString("depart"),
+                        escale
+
+                );
+
+                listData.add(vol);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
+
+    public ObservableList<ReservationData> getReservationDataList() {
+        ObservableList<ReservationData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT r.num_reservation, r.vol_num_vol, v.destination, v.dateDepart, r.status, v.prix " +
+                "FROM vol v JOIN reservation r ON r.vol_num_vol = v.num_vol";
+
+        connect = database.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            while (result.next()) {
+                ReservationData reservation = new ReservationData(
+                        result.getInt("num_reservation"),
+                        result.getInt("vol_num_vol"),
+                        result.getString("destination"),
+                        result.getString("dateDepart"),
+                        result.getDouble("prix"),
+                        result.getBoolean("status")
+                );
+
+                listData.add(reservation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
+
+
     @FXML
     private void addEmployeeSelect() {
         VolData selectedVol = admin_vols_tableview.getSelectionModel().getSelectedItem();
@@ -764,6 +898,50 @@ public void addVolAdd() {
         admin_vols_tableview.setItems(addVolList);
     }
 
+    private ObservableList<ReservationData> reservationList;
+
+
+// ...
+
+    public void addReservationShowListData() {
+        reservationList = getReservationDataList();
+
+        id_reservation.setCellValueFactory(new PropertyValueFactory<>("idReservation"));
+        id_vol_reservation.setCellValueFactory(new PropertyValueFactory<>("idVolReservation"));
+        destination.setCellValueFactory(new PropertyValueFactory<>("destination"));
+        date_vol.setCellValueFactory(new PropertyValueFactory<>("dateVol"));
+        prix.setCellValueFactory(new PropertyValueFactory<>("prix"));
+
+        // Appliquer la Callback personnalisée pour la colonne "Status"
+        status.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ReservationData, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<ReservationData, String> cellData) {
+                BooleanProperty statusProperty = cellData.getValue().statusProperty();
+                String statusText = statusProperty.get() ? "Accepté" : "Pas encore";
+                return new ReadOnlyStringWrapper(statusText);
+            }
+        });
+
+        user_reservations_tableview.setItems(reservationList);
+    }
+
+
+    private ObservableList<VolData> volDataList;
+
+    public void populateVolTableView() {
+        volDataList = addVolListCountEscale();
+
+        id_vol.setCellValueFactory(new PropertyValueFactory<>("numVol"));
+        depart_vol.setCellValueFactory(new PropertyValueFactory<>("depart"));
+        destination_vol.setCellValueFactory(new PropertyValueFactory<>("destination"));
+        date_depart_vol.setCellValueFactory(new PropertyValueFactory<>("dateVol"));
+        heure_depart_vol.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
+        heure_arrivee_vol.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
+        prix_vol.setCellValueFactory(new PropertyValueFactory<>("prix"));
+        escales_vol.setCellValueFactory(new PropertyValueFactory<>("nbEscale"));
+
+        user_vols_tableview.setItems(volDataList);
+    }
 
     public void salaryUpdate() {
 /*
@@ -813,6 +991,50 @@ public void addVolAdd() {
 
 
     }
+
+
+
+    public void supprimerReservation() {
+        // Récupérer la réservation sélectionnée dans la table
+        ReservationData selectedReservation = user_reservations_tableview.getSelectionModel().getSelectedItem();
+        if (selectedReservation == null) {
+            // Aucune réservation sélectionnée, afficher une alerte d'erreur
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Aucune réservation sélectionnée");
+            alert.setContentText("Veuillez sélectionner une réservation à supprimer.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Récupérer l'ID de la réservation sélectionnée
+        int reservationId = selectedReservation.getIdReservation();
+
+        // Supprimer la réservation de la base de données
+        String deleteQuery = "DELETE FROM reservation WHERE num_reservation = ?";
+        connect = database.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(deleteQuery);
+            prepare.setInt(1, reservationId);
+            int rowsAffected = prepare.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // La réservation a été supprimée avec succès
+                System.out.println("Réservation supprimée avec succès !");
+                // Actualiser la liste des réservations affichées dans la table
+                reservationList.remove(selectedReservation);
+            } else {
+                // Échec de suppression de la réservation
+                System.out.println("Échec de suppression de la réservation.");
+            }
+            addReservationShowListData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Afficher un message d'erreur ou effectuer une autre action appropriée en cas d'échec
+        }
+    }
+
 
     public ObservableList<employeeData> salaryListData() {
 
@@ -882,10 +1104,14 @@ public void addVolAdd() {
     }
 
     public void displayUsername() {
-
+        String userEmail = getData.getEmail();
         username.setText(getData.login_username);
         username1.setText(getData.login_username);
-        System.out.println("le username est hhhhhhhhhhhhh "+username);
+        Integer userId=getData.getUserId();
+
+        System.out.println("Le username est : " + getData.login_username);
+        System.out.println("L'e-mail est : " + userEmail);
+        System.out.println("le id "+userId);
     }
 
     public void switchForm(ActionEvent event) {
@@ -1116,10 +1342,7 @@ public void addVolAdd() {
 
 
 
-  public void annulerEscale()
-    {
 
-    }
 
     public ObservableList<EscaleData> addEscaleListData() {
         ObservableList<EscaleData> listData = FXCollections.observableArrayList();
@@ -1153,6 +1376,8 @@ public void addVolAdd() {
     }
 
 
+
+
     private ObservableList<EscaleData> addEscaleList;
 
     public void addEscaleShowListData() {
@@ -1166,6 +1391,8 @@ public void addVolAdd() {
 
         escales_tableview.setItems(addEscaleList);
     }
+
+
 
     @FXML
     private void addEscaleSelect() {
@@ -1182,6 +1409,45 @@ public void addVolAdd() {
     }
 
 
+    public void reserverVol() {
+        // Vérifier si un vol est sélectionné dans la table
+        VolData selectedVol = user_vols_tableview.getSelectionModel().getSelectedItem();
+        if (selectedVol == null) {
+            // Aucun vol sélectionné, afficher un message d'erreur ou effectuer une autre action appropriée
+            return;
+        }
+
+        // Récupérer l'ID de l'utilisateur et l'ID du vol sélectionné
+        Integer userId = getData.userId;
+        Integer volId = Integer.parseInt(selectedVol.getNumVol());
+        System.out.println("le volId es"+volId);
+        System.out.println("le userId es"+userId);
+        // Insérer une nouvelle réservation dans la table reservation
+        String insertQuery = "INSERT INTO reservation (client_id, vol_num_vol, status) VALUES (?, ?, false)";
+        connect = database.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            prepare.setInt(1, userId);
+            prepare.setInt(2, volId);
+            prepare.executeUpdate();
+
+            // Récupérer l'ID auto-incrémenté de la réservation
+            ResultSet generatedKeys = prepare.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int reservationId = generatedKeys.getInt(1);
+                System.out.println("Réservation créée avec succès ! ID de réservation : " + reservationId);
+            } else {
+                // Échec de récupération de l'ID de réservation auto-incrémenté
+                System.out.println("Échec de création de réservation. Impossible de récupérer l'ID de réservation.");
+            }
+            addReservationShowListData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Afficher un message d'erreur ou effectuer une autre action appropriée en cas d'échec
+        }
+    }
+
     public void addEscaleReset() {
         champs_numero_escale.setText("");
         champs_heure_arrivee_escale.setText("");
@@ -1189,6 +1455,85 @@ public void addVolAdd() {
         champs_ville_escale.setText("");
         volComboBox.getSelectionModel().clearSelection();
     }
+
+
+    private ObservableList<EscaleData> escaleList;
+    public void populateEscaleTable() {
+        escaleList = VoirEscale();
+
+        heure_arrivee.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
+        heure_depart.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
+        ville.setCellValueFactory(new PropertyValueFactory<>("ville"));
+
+        user_escales_tableview.setItems(escaleList);
+    }
+
+
+
+
+    public ObservableList<EscaleData> VoirEscale() {
+        // Récupérer la réservation sélectionnée dans la table
+        ReservationData selectedReservation = user_reservations_tableview.getSelectionModel().getSelectedItem();
+        if (selectedReservation == null) {
+            // Aucune réservation sélectionnée, afficher une alerte d'erreur
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Aucune réservation sélectionnée");
+            alert.setContentText("Veuillez sélectionner une réservation pour afficher les escales.");
+            alert.showAndWait();
+            return null;
+        }
+
+        // Vérifier si le statut de la réservation est true
+        if (selectedReservation.isStatus()) {
+            // Statut de réservation est true, afficher les escales
+            int volNum = selectedReservation.getIdVolReservation();
+            String escaleQuery = "SELECT e.id_escale, e.heure_d, e.heure_a, e.ville FROM escale e JOIN reservation r ON r.vol_num_vol = e.id_vol WHERE r.status = true AND r.vol_num_vol = ?";
+            connect = database.connectDb();
+
+            try {
+                prepare = connect.prepareStatement(escaleQuery);
+                prepare.setInt(1, volNum);
+                result = prepare.executeQuery();
+
+                ObservableList<EscaleData> escaleList = FXCollections.observableArrayList();
+
+                // Récupérer les données des escales
+                while (result.next()) {
+                    String heureDepart = result.getString("heure_d");
+                    String heureArrivee = result.getString("heure_a");
+                    String ville = result.getString("ville");
+                    String id=result.getString("id_escale");
+                    EscaleData escaleData = new EscaleData(id,heureArrivee,heureDepart, ville);
+                    escaleList.add(escaleData);
+                }
+
+                // Afficher la liste des escales dans la table
+                user_escales_tableview.setItems(escaleList);
+
+                return escaleList;
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Afficher un message d'erreur ou effectuer une autre action appropriée en cas d'échec
+            }
+        } else {
+            // Statut de réservation est false, afficher une alerte d'information
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information");
+            alert.setHeaderText("Réservation non acceptée");
+            alert.setContentText("La réservation sélectionnée n'a pas encore été acceptée.");
+            alert.showAndWait();
+        }
+
+        return null;
+    }
+
+
+
+
+
+
+
 
     private double x = 0;
     private double y = 0;
@@ -1251,15 +1596,17 @@ public void addVolAdd() {
         String role = getData.getRole();
 
         if(role.equals("admin")) {
+            admin_gestion_vols.setVisible(false);
+            admin_gestion_escales.setVisible(false);
+            admin_gestion_clients.setVisible(false);
             home.setVisible(true);
             admin_interface.setVisible(true);
             client_interface.setVisible(false);
-        }else
+    }else
         {
             admin_interface.setVisible(false);
             client_interface.setVisible(true);
         }
-
 
         displayUsername();
         defaultNav();
@@ -1268,15 +1615,15 @@ public void addVolAdd() {
         homeEmployeeTotalPresent();
         homeTotalInactive();
         homeChart();
-
+        addReservationShowListData();
        addVolShowListData();
        addEscaleShowListData();
         addEmployeeGendernList();
         addEmployeePositionList();
+        populateVolTableView();
 
 
 
-        salaryShowListData();
     }
 
 }
