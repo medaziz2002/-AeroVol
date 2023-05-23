@@ -2,6 +2,9 @@ package com.example.projetvolmanagement;
 
 
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -15,7 +18,10 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import com.itextpdf.text.*;
 
+import com.itextpdf.text.pdf.PdfDocument;
+import com.itextpdf.text.pdf.PdfWriter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,6 +47,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 
 
 public class dashboardController implements Initializable {
@@ -1920,6 +1927,115 @@ public void addVolAdd() {
     }
 
     // ... Autres méthodes et logique de votre contrôleur
+
+
+    @FXML
+    public void onButtonClicked(ActionEvent event) throws DocumentException, FileNotFoundException {
+        // Récupérer la réservation sélectionnée dans la TableView
+        ReservationData selectedReservation = user_reservations_tableview.getSelectionModel().getSelectedItem();
+
+        if (selectedReservation != null) {
+            int reservationId = selectedReservation.getIdReservation();
+
+            // Appeler la méthode generateTicketPDF() en passant l'ID de réservation
+            generateTicketPDF(reservationId);
+        }
+    }
+
+
+    public void generateTicketPDF(int reservationId) throws FileNotFoundException, DocumentException {
+        // Création du document PDF
+
+
+
+        Document document = new Document();
+
+
+        String filePath = "C:\\Users\\med aziz\\Desktop\\telechargement\\ticket.pdf";
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(filePath));
+
+        document.open();
+
+            // Requête SQL pour récupérer les informations de réservation
+            String sql = "SELECT u.nom, u.prenom as prenom,  v.dateDepart, v.heure_d, v.depart, v.destination, r.num_reservation " +
+                    "FROM reservation r, vol v, users u " +
+                    "WHERE r.vol_num_vol = v.num_vol " +
+                    "AND r.client_id = u.user_id " +
+                    "AND r.status = true " +
+                    "AND r.num_reservation = ? and r.client_id=?";
+
+            Connection connection = null;
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+
+            try {
+                connection = database.connectDb();
+                statement = connection.prepareStatement(sql);
+                statement.setInt(1, reservationId);
+                statement.setInt(2,getData.getUserId());
+                resultSet = statement.executeQuery();
+
+                if (resultSet.next()) {
+                    // Récupérer les informations de réservation depuis le ResultSet
+                    String nom = resultSet.getString("nom");
+                    String prenom = resultSet.getString("prenom");
+                    String dateDepart = resultSet.getString("dateDepart");
+                    String heureDepart = resultSet.getString("heure_d");
+                    String depart = resultSet.getString("depart");
+                    String destination = resultSet.getString("destination");
+                    int numReservation = resultSet.getInt("num_reservation");
+
+                    // Ajouter le contenu du ticket
+                    document.add(new Paragraph("Ticket de réservation"));
+                    document.add(new Paragraph("Nom : " + nom));
+                    document.add(new Paragraph("Prénom : " + prenom));
+                    document.add(new Paragraph("Date de départ : " + dateDepart));
+                    document.add(new Paragraph("Heure de départ : " + heureDepart));
+                    document.add(new Paragraph("Départ : " + depart));
+                    document.add(new Paragraph("Destination : " + destination));
+                    document.add(new Paragraph("Numéro de réservation : " + numReservation));
+
+                    // Fermer le document PDF
+                    document.close();
+
+                    // Afficher un message de succès
+                    System.out.println("Le ticket a été généré avec succès.");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            } finally {
+                // Fermer les ressources de la base de données
+                if (resultSet != null) {
+                    try {
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (statement != null) {
+                    try {
+                        statement.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+    }
+
+
+
+
 
 
 

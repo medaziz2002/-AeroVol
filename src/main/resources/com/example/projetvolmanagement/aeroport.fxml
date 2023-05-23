@@ -92,7 +92,7 @@
                   </TableView>
                   <Button fx:id="supprimer_reservation" layoutX="305.0" layoutY="516.0" mnemonicParsing="false" onAction="#supprimerReservation" prefHeight="42.0" prefWidth="148.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Supprimer" />
                   <Button fx:id="user_escales_btn" layoutX="108.0" layoutY="516.0" mnemonicParsing="false" onAction="#VoirEscale" prefHeight="42.0" prefWidth="161.0" styleClass="add-btn" stylesheets="@dashboardDessign.css" text="Consulter Escales" />
-                  <Button fx:id="telecharger_ticket" layoutX="499.0" layoutY="516.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="42.0" prefWidth="161.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="telecharger ticket" />
+                  <Button fx:id="telecharger_ticket" layoutX="499.0" layoutY="516.0" mnemonicParsing="false" onAction="#onButtonClicked" prefHeight="42.0" prefWidth="161.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="telecharger ticket" />
                   <ComboBox fx:id="volComboBox1" layoutX="22.0" layoutY="25.0" prefHeight="35.0" prefWidth="211.0" promptText="Sélectionner un vol">
                   <items>
                      <FXCollections fx:factory="observableArrayList">
