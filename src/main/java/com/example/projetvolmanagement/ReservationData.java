@@ -3,13 +3,22 @@ package com.example.projetvolmanagement;
 import javafx.beans.property.*;
 
 public class ReservationData {
-    private final IntegerProperty idReservation;
-    private final IntegerProperty idVolReservation;
-    private final StringProperty destination;
-    private final StringProperty dateVol;
-    private final DoubleProperty prix;
-    private final BooleanProperty status;
+    private  IntegerProperty idReservation;
+    private  IntegerProperty idVolReservation;
+    private  StringProperty destination;
+    private  StringProperty dateVol;
+    private  DoubleProperty prix;
+    private  BooleanProperty status;
+    private  StringProperty email;
 
+
+    public ReservationData(int idReservation, String email, String destination, String dateVol, boolean status) {
+        this.idReservation = new SimpleIntegerProperty(idReservation);
+        this.email = new SimpleStringProperty(email);
+        this.destination = new SimpleStringProperty(destination);
+        this.dateVol = new SimpleStringProperty(dateVol);
+        this.status = new SimpleBooleanProperty(status);
+    }
     public ReservationData(Integer idReservation, int idVolReservation, String destination, String dateVol, double prix, boolean status) {
         this.idReservation = new SimpleIntegerProperty(idReservation);
         this.idVolReservation = new SimpleIntegerProperty(idVolReservation);
@@ -19,6 +28,17 @@ public class ReservationData {
         this.status = new SimpleBooleanProperty(status);
     }
 
+    public String getEmail() {
+        return email.get();
+    }
+
+    public StringProperty emailProperty() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email.set(email);
+    }
     public int getIdReservation() {
         return idReservation.get();
     }

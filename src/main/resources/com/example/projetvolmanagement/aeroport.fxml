@@ -230,7 +230,7 @@
                   <TableView fx:id="gestion_clients_tableview" layoutX="3.0" layoutY="4.0" onMouseClicked="#salarySelect" prefHeight="432.0" prefWidth="756.0" stylesheets="@dashboardDessign.css">
                      <columns>
                         <TableColumn fx:id="id_reservation1" prefWidth="114.39996337890625" text="ID Reservation" />
-                        <TableColumn fx:id="nom_client" prefWidth="124.0" text="Nom Client" />
+                        <TableColumn fx:id="nom_client" prefWidth="124.0" text="Email" />
                         <TableColumn fx:id="destination_reservation" prefWidth="177.60000610351562" text="Destination" />
                         <TableColumn fx:id="date_vol_reservation" prefWidth="179.199951171875" text="Date Vol" />
                         <TableColumn fx:id="status_reservation" prefWidth="160.0" text="Status" />

@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -336,7 +337,27 @@ public class dashboardController implements Initializable {
     private TableColumn<EscaleData, String> ville_escale1;
     @FXML
     private TableColumn<EscaleData, Integer> durre;
-// Définissez les autres identifiants nécessaires pour les autres composants
+
+//ligne
+    @FXML
+    private TableView<ReservationData> gestion_clients_tableview;
+
+    @FXML
+    private TableColumn<ReservationData, String> id_reservation1;
+
+    @FXML
+    private TableColumn<ReservationData, String> nom_client;
+
+    @FXML
+    private TableColumn<ReservationData, String> destination_reservation;
+
+    @FXML
+    private TableColumn<ReservationData, String> date_vol_reservation;
+
+    @FXML
+    private TableColumn<ReservationData, String> status_reservation;
+
+    // Définissez les autres identifiants nécessaires pour les autres composants
     @FXML
     private TextField id_escale;
     private Connection connect;
@@ -1369,7 +1390,7 @@ public void addVolAdd() {
 
                 int durationInMinutes;
 
-                if (heureDepart.length() >= 5 && heureArrivee.length() >= 5) {
+                if (heureDepart.length() >= 5 || heureArrivee.length() >= 5) {
                     // Extract hours and minutes from the time strings
                     int departHour = Integer.parseInt(heureDepart.substring(0, 2));
                     int departMinute = Integer.parseInt(heureDepart.substring(3, 5));
@@ -1618,6 +1639,53 @@ public void addVolAdd() {
 
 
 
+    public void retrieveReservationDataListAdmin() {
+        reservationList = retrieveReservationDataList();
+
+        id_reservation1.setCellValueFactory(new PropertyValueFactory<>("idReservation"));
+        nom_client.setCellValueFactory(new PropertyValueFactory<>("email"));
+        destination_reservation.setCellValueFactory(new PropertyValueFactory<>("destination"));
+        date_vol_reservation.setCellValueFactory(new PropertyValueFactory<>("dateVol"));
+
+        status_reservation.setCellValueFactory(param -> {
+            Boolean statusValue = param.getValue().isStatus();
+            String statusText = statusValue ? "Accepté" : "Pas encore";
+            return new SimpleStringProperty(statusText);
+        });
+
+        gestion_clients_tableview.setItems(reservationList);
+    }
+
+    public ObservableList<ReservationData> retrieveReservationDataList() {
+        ObservableList<ReservationData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT r.num_reservation, u.email as email, v.destination, v.dateDepart, r.status " +
+                "FROM reservation r " +
+                "JOIN vol v ON r.vol_num_vol = v.num_vol " +
+                "JOIN users u ON r.client_id = u.user_id";
+
+        connect = database.connectDb();
+
+        try {
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+
+            while (result.next()) {
+                ReservationData reservation = new ReservationData(
+                        result.getInt("num_reservation"),
+                        result.getString("email"),
+                        result.getString("destination"),
+                        result.getString("dateDepart"),
+                        result.getBoolean("status")
+                );
+
+                listData.add(reservation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return listData;
+    }
 
 
 
@@ -1708,7 +1776,7 @@ public void addVolAdd() {
         addEmployeeGendernList();
         addEmployeePositionList();
         populateVolTableView();
-
+        retrieveReservationDataListAdmin();
 
 
     }
