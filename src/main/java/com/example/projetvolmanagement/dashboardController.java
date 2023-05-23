@@ -102,6 +102,8 @@ public class dashboardController implements Initializable {
 
     @FXML
     private Button minimize;
+    @FXML
+    private Button accepter_client;
 
     @FXML
     private Label username;
@@ -1687,6 +1689,77 @@ public void addVolAdd() {
         return listData;
     }
 
+
+
+    // Méthode appelée lorsqu'on clique sur le bouton "Accepter"
+    @FXML
+    private void accepteReservation(ActionEvent event) {
+        ReservationData selectedReservation = gestion_clients_tableview.getSelectionModel().getSelectedItem();
+        if (selectedReservation != null) {
+            // Récupérer l'ID de la réservation sélectionnée
+            int reservationId = selectedReservation.getIdReservation();
+
+            // Effectuer la mise à jour dans la base de données
+            boolean success = updateReservationStatus(reservationId);
+
+            if (success) {
+                // Mettre à jour le statut dans l'objet ReservationData
+                selectedReservation.setStatus(true);
+                gestion_clients_tableview.refresh(); // Rafraîchir la TableView pour refléter les modifications
+            } else {
+                // La mise à jour a échoué, afficher un message d'erreur ou prendre d'autres mesures nécessaires
+            }
+        }
+    }
+
+    // Méthode pour effectuer la mise à jour du statut dans la base de données
+    private boolean updateReservationStatus(int reservationId) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Établir la connexion à la base de données
+            connection = database.connectDb();
+
+            // Préparer la requête SQL
+            String sql = "UPDATE reservation SET status = true WHERE num_reservation = ?";
+            statement = connection.prepareStatement(sql);
+
+            // Définir les valeurs des paramètres de la requête
+            statement.setInt(1, reservationId);
+
+            // Exécuter la requête de mise à jour
+            int rowsAffected = statement.executeUpdate();
+
+            // Vérifier si la mise à jour a réussi
+            if (rowsAffected > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // Fermer les ressources de la base de données
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // ... Autres méthodes et logique de votre contrôleur
 
 
 

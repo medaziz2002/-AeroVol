@@ -236,7 +236,7 @@
                         <TableColumn fx:id="status_reservation" prefWidth="160.0" text="Status" />
                      </columns>
                   </TableView>
-                  <Button fx:id="accepter_client" layoutX="212.0" layoutY="496.0" mnemonicParsing="false" onAction="#salaryUpdate" prefHeight="38.0" prefWidth="99.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Accepter" />
+                  <Button fx:id="accepter_client" layoutX="212.0" layoutY="496.0" mnemonicParsing="false" onAction="#accepteReservation" prefHeight="38.0" prefWidth="99.0" styleClass="update-btn" stylesheets="@dashboardDessign.css" text="Accepter" />
                   <Button fx:id="refuser_client" layoutX="381.0" layoutY="497.0" mnemonicParsing="false" onAction="#salaryUpdate" prefHeight="38.0" prefWidth="99.0" styleClass="delete-btn" stylesheets="@dashboardDessign.css" text="Refuser" />
                </children>
             </AnchorPane>
