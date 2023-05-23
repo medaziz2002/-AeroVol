@@ -339,6 +339,8 @@ public class dashboardController implements Initializable {
     private TableColumn<EscaleData, String> ville_escale1;
     @FXML
     private TableColumn<EscaleData, Integer> durre;
+    @FXML
+    private Label home_pays;
 
 //ligne
     @FXML
@@ -390,6 +392,59 @@ public class dashboardController implements Initializable {
             e.printStackTrace();
         }
 */
+    }
+    public void homePaysLaPlusVisite() {
+        String sql = "SELECT destination, COUNT(*) AS visits " +
+                "FROM vol " +
+                "JOIN reservation ON reservation.vol_num_vol = vol.num_vol " +
+                "WHERE reservation.status = true " +
+                "GROUP BY destination " +
+                "ORDER BY visits DESC " +
+                "LIMIT 1";
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = database.connectDb();
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+
+            String paysPlusVisite = "";
+
+            if (resultSet.next()) {
+                paysPlusVisite = resultSet.getString("destination");
+            }
+
+            home_pays.setText(paysPlusVisite);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Fermer les ressources de la base de données
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void homeEmployeeTotalPresent() {
@@ -824,7 +879,7 @@ public void addVolAdd() {
     public ObservableList<VolData> addVolListCountEscale() {
         ObservableList<VolData> listData = FXCollections.observableArrayList();
         String sql = "SELECT COUNT(e.id_escale) AS nbEscale, v.num_vol, v.dateDepart, v.heure_a, v.heure_d, v.prix, v.depart, v.destination " +
-                "FROM vol v JOIN escale e ON v.num_vol = e.id_vol " +
+                "FROM vol v LEFT JOIN escale e ON v.num_vol = e.id_vol " +
                 "GROUP BY v.num_vol";
 
 
@@ -862,12 +917,17 @@ public void addVolAdd() {
     public ObservableList<ReservationData> getReservationDataList() {
         ObservableList<ReservationData> listData = FXCollections.observableArrayList();
         String sql = "SELECT r.num_reservation, r.vol_num_vol, v.destination, v.dateDepart, r.status, v.prix " +
-                "FROM vol v JOIN reservation r ON r.vol_num_vol = v.num_vol";
+                "FROM vol v JOIN reservation r ON r.vol_num_vol = v.num_vol " +
+                "JOIN users u ON r.client_id = u.user_id and u.user_id=?";
+
+
+
 
         connect = database.connectDb();
 
         try {
             prepare = connect.prepareStatement(sql);
+            prepare.setInt(1, getData.getUserId());
             result = prepare.executeQuery();
 
             while (result.next()) {
@@ -1714,6 +1774,7 @@ public void addVolAdd() {
                 System.out.println("E-mail: " + email);
                 EnvoyerEmail test = new EnvoyerEmail();
                 test.envoyer(email);
+                homePaysLaPlusVisite();
             } else {
                 // La mise à jour a échoué, afficher un message d'erreur ou prendre d'autres mesures nécessaires
             }
@@ -1861,7 +1922,7 @@ public void addVolAdd() {
         addEmployeePositionList();
         populateVolTableView();
         retrieveReservationDataListAdmin();
-
+        homePaysLaPlusVisite();
 
     }
 
