@@ -1699,6 +1699,9 @@ public void addVolAdd() {
             // Récupérer l'ID de la réservation sélectionnée
             int reservationId = selectedReservation.getIdReservation();
 
+            // Récupérer l'e-mail de la réservation sélectionnée
+            String email = selectedReservation.getEmail();
+
             // Effectuer la mise à jour dans la base de données
             boolean success = updateReservationStatus(reservationId);
 
@@ -1706,12 +1709,16 @@ public void addVolAdd() {
                 // Mettre à jour le statut dans l'objet ReservationData
                 selectedReservation.setStatus(true);
                 gestion_clients_tableview.refresh(); // Rafraîchir la TableView pour refléter les modifications
+
+                // Utiliser l'e-mail récupéré
+                System.out.println("E-mail: " + email);
+                EnvoyerEmail test = new EnvoyerEmail();
+                test.envoyer(email);
             } else {
                 // La mise à jour a échoué, afficher un message d'erreur ou prendre d'autres mesures nécessaires
             }
         }
     }
-
     // Méthode pour effectuer la mise à jour du statut dans la base de données
     private boolean updateReservationStatus(int reservationId) {
         Connection connection = null;
@@ -1734,6 +1741,10 @@ public void addVolAdd() {
             // Vérifier si la mise à jour a réussi
             if (rowsAffected > 0) {
                 return true;
+
+
+
+
             } else {
                 return false;
             }
