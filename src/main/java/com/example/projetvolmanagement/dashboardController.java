@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+
+import aeroport.Vol;
 import com.itextpdf.text.*;
 
 import com.itextpdf.text.pdf.PdfDocument;
@@ -43,6 +45,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -187,6 +190,9 @@ public class dashboardController implements Initializable {
 
     @FXML
     private TextField rechercher_vol1;
+    @FXML
+    private TextField recherche_vol;
+
 
     @FXML
     private TextField addEmployee_employeeID;
@@ -322,7 +328,8 @@ public class dashboardController implements Initializable {
     private TableColumn<VolData, String> prix_vol1;
     @FXML
     private ComboBox<String> volComboBox;
-
+    @FXML
+    private ComboBox<String> volComboBox1;
 
     @FXML
     private TextField champs_numero_escale;
@@ -350,7 +357,11 @@ public class dashboardController implements Initializable {
     @FXML
     private TableColumn<EscaleData, String> ville_escale1;
     @FXML
+    private TableColumn<EscaleData, Integer> duree1;
+
+    @FXML
     private TableColumn<EscaleData, Integer> durre;
+
     @FXML
     private Label home_pays;
 
@@ -384,9 +395,6 @@ public class dashboardController implements Initializable {
     private PreparedStatement prepare;
     private ResultSet result;
 
-    private Image image;
-
-
     public void homeTotalClients() {
         String sql = "SELECT COUNT(client_id) AS totalClients FROM reservation WHERE status = true";
 
@@ -406,6 +414,8 @@ public class dashboardController implements Initializable {
             e.printStackTrace();
         }
     }
+
+
     public void homeTotalRevenue() {
         String sql = "SELECT SUM(v.prix) AS totalRevenue " +
                 "FROM vol v, reservation r " +
@@ -458,28 +468,6 @@ public class dashboardController implements Initializable {
         }
     }
 
-    public void homeTotalEmployees() {
-/*
-        String sql = "SELECT COUNT(num_vol) FROM vol";
-
-        connect = database.connectDb();
-        int countData = 0;
-        try {
-
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-
-            while (result.next()) {
-                countData = result.getInt("COUNT(num_vol)");
-            }
-
-            home_totalEmployees.setText(String.valueOf(countData));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-*/
-    }
     public void homePaysLaPlusVisite() {
         Calendar calendar = Calendar.getInstance();
         int currentMonth = calendar.get(Calendar.MONTH) + 1; // Ajouter 1 car les mois sont indexés à partir de 0 dans Calendar
@@ -539,48 +527,6 @@ public class dashboardController implements Initializable {
     }
 
 
-    public void homeEmployeeTotalPresent() {
-/*
-        String sql = "SELECT COUNT(id) FROM vol";
-
-        connect = database.connectDb();
-        int countData = 0;
-        try {
-            statement = connect.createStatement();
-            result = statement.executeQuery(sql);
-
-            while (result.next()) {
-                countData = result.getInt("COUNT(id)");
-            }
-            home_totalPresents.setText(String.valueOf(countData));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-*/
-    }
-
-    public void homeTotalInactive() {
-/*
-        String sql = "SELECT COUNT(id) FROM vol WHERE prix = '0.0'";
-
-        connect = database.connectDb();
-        int countData = 0;
-        try {
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-
-            while (result.next()) {
-                countData = result.getInt("COUNT(id)");
-            }
-            home_totalInactiveEm.setText(String.valueOf(countData));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-*/
-    }
-
     public void homeChart() {
 
         home_chart.getData().clear();
@@ -612,8 +558,10 @@ public class dashboardController implements Initializable {
 
     public void getVolsFromDatabase() throws SQLException {
         String sql = "SELECT * FROM vol";
-
+        connect = database.connectDb();
         ObservableList<String> volList = FXCollections.observableArrayList();
+        ObservableList<Vol> volList1 = FXCollections.observableArrayList();
+
         try {
             Statement statement = connect.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -622,10 +570,24 @@ public class dashboardController implements Initializable {
                 String numVol = resultSet.getString("num_vol");
                 String depart = resultSet.getString("depart");
                 String destination = resultSet.getString("destination");
+                int numVol1 = resultSet.getInt("num_vol");
+                String depart1 = resultSet.getString("depart");
+                String destination1 = resultSet.getString("destination");
+
+                Vol flight = new Vol(numVol1, depart, destination);
+                volList1.add(flight);
                 volList.add(numVol + " - " + depart + " - " + destination);
+
+            }
+            ObservableList<String> volStringList = FXCollections.observableArrayList();
+            for (Vol vol : volList1) {
+                String volString = vol.getNum_vol() + " - " + vol.getDepart() + " - " + vol.getDestination();
+                volStringList.add(volString);
             }
             volComboBox.getItems().clear();
             volComboBox.getItems().addAll(volList);
+            volComboBox1.getItems().clear();
+            volComboBox1.setItems(volStringList);
 
         } catch (SQLException e) {
             // Gérer l'erreur
@@ -839,9 +801,20 @@ public void addVolAdd() {
             // Actualisation de l'affichage de la liste des vols
             addVolShowListData();
 
-        } catch (Exception e) {
+        }
+        catch (SQLIntegrityConstraintViolationException e) {
+            // Handle the exception here
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Il faut d'abord supprimer les réservations de ce vol.");
+            alert.showAndWait();
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -856,50 +829,7 @@ public void addVolAdd() {
         champs_destination_vol.setText("");
     }
 
-    public void addEmployeeInsertImage() {
-/*
-        FileChooser open = new FileChooser();
-        File file = open.showOpenDialog(main_form.getScene().getWindow());
-
-        if (file != null) {
-            getData.path = file.getAbsolutePath();
-
-            image = new Image(file.toURI().toString(), 101, 127, false, true);
-            addEmployee_image.setImage(image);
-        }*/
-    }
-
-    private String[] positionList = {"Marketer Coordinator", "Web Developer (Back End)", "Web Developer (Front End)", "App Developer"};
-
-    public void addEmployeePositionList() {
-        /*
-        List<String> listP = new ArrayList<>();
-
-        for (String data : positionList) {
-            listP.add(data);
-        }
-
-        ObservableList listData = FXCollections.observableArrayList(listP);
-        addEmployee_position.setItems(listData);*/
-    }
-
-    private String[] listGender = {"Male", "Female", "Others"};
-
-    public void addEmployeeGendernList() {
-        /*
-        List<String> listG = new ArrayList<>();
-
-        for (String data : listGender) {
-            listG.add(data);
-        }
-
-        ObservableList listData = FXCollections.observableArrayList(listG);
-        addEmployee_gender.setItems(listData);
-        */
-
-    }
-
-    public void addVolSearch() {
+     /*public void addVolSearch() {
         FilteredList<VolData> filter = new FilteredList<>(addVolList, e -> true);
 
         rechercher_vol1.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
@@ -926,7 +856,7 @@ public void addVolAdd() {
                     if (formattedDateVol.contains(searchKey)) {
                         return true;
                     }
-                }
+               }
 
                 return false;
             });
@@ -935,6 +865,24 @@ public void addVolAdd() {
         SortedList<VolData> sortList = new SortedList<>(filter);
         sortList.comparatorProperty().bind(admin_vols_tableview.comparatorProperty());
         admin_vols_tableview.setItems(sortList);
+    }*/
+
+
+    @FXML
+    private void handleSearch(KeyEvent event) {
+        String keyword = ((TextField) event.getSource()).getText();
+        ObservableList<VolData> filteredList = searchVolData(keyword);
+        admin_vols_tableview.setItems(filteredList);
+    }
+
+    private ObservableList<VolData> searchVolData(String keyword) {
+        ObservableList<VolData> filteredList = FXCollections.observableArrayList();
+        for (VolData vol : addVolList) {
+            if (vol.matchesKeyword(keyword)) {
+                filteredList.add(vol);
+            }
+        }
+        return filteredList;
     }
 
 
@@ -1042,6 +990,18 @@ public void addVolAdd() {
         return listData;
     }
 
+//recherche reservation par vol************
+private ObservableList<ReservationData> filterReservationsByFlight(int flightId) {
+    ObservableList<ReservationData> filteredList = FXCollections.observableArrayList();
+    reservationList = getReservationDataList();
+    for (ReservationData reservation : reservationList) {
+        if (reservation.getIdVolReservation() == flightId) {
+            filteredList.add(reservation);
+        }
+    }
+    return filteredList;
+}
+
 
     @FXML
     private void addEmployeeSelect() {
@@ -1126,57 +1086,6 @@ public void addVolAdd() {
         user_vols_tableview.setItems(volDataList);
     }
 
-    public void salaryUpdate() {
-/*
-        String sql = "UPDATE employee_info SET salary = '" + salary_salary.getText()
-                + "' WHERE employee_id = '" + salary_employeeID.getText() + "'";
-
-        connect = database.connectDb();
-
-        try {
-            Alert alert;
-
-            if (salary_employeeID.getText().isEmpty()
-                    || salary_firstName.getText().isEmpty()
-                    || salary_lastName.getText().isEmpty()
-                    || salary_position.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please select item first");
-                alert.showAndWait();
-            } else {
-                statement = connect.createStatement();
-                statement.executeUpdate(sql);
-
-                alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Information Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Successfully Updated!");
-                alert.showAndWait();
-
-                salaryShowListData();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-   */
-
-    }
-
-    public void salaryReset() {
-        salary_employeeID.setText("");
-        salary_firstName.setText("");
-        salary_lastName.setText("");
-        salary_position.setText("");
-        salary_salary.setText("");
-
-
-    }
-
-
-
     public void supprimerReservation() {
         // Récupérer la réservation sélectionnée dans la table
         ReservationData selectedReservation = user_reservations_tableview.getSelectionModel().getSelectedItem();
@@ -1218,70 +1127,6 @@ public void addVolAdd() {
         }
     }
 
-
-    public ObservableList<employeeData> salaryListData() {
-
-        ObservableList<employeeData> listData = FXCollections.observableArrayList();
-
-        String sql = "SELECT * FROM vol";
-
-        connect = database.connectDb();
-
-        try {
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-
-            employeeData employeeD;
-
-            while (result.next()) {
-                employeeD = new employeeData(result.getInt("employee_id"),
-                        result.getString("firstName"),
-                        result.getString("lastName"),
-                        result.getString("position"),
-                        result.getDouble("salary"));
-
-                listData.add(employeeD);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return listData;
-    }
-
-    private ObservableList<employeeData> salaryList;
-
-    public void salaryShowListData() {
-        /*
-        salaryList = salaryListData();
-
-        salary_col_employeeID.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
-        salary_col_firstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        salary_col_lastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        salary_col_position.setCellValueFactory(new PropertyValueFactory<>("position"));
-        salary_col_salary.setCellValueFactory(new PropertyValueFactory<>("salary"));
-
-        salary_tableView.setItems(salaryList);
-*/
-    }
-
-    public void salarySelect() {
-
-     /*   employeeData employeeD = salary_tableView.getSelectionModel().getSelectedItem();
-        int num = salary_tableView.getSelectionModel().getSelectedIndex();
-
-        if ((num - 1) < -1) {
-            return;
-        }
-
-        salary_employeeID.setText(String.valueOf(employeeD.getEmployeeId()));
-        salary_firstName.setText(employeeD.getFirstName());
-        salary_lastName.setText(employeeD.getLastName());
-        salary_position.setText(employeeD.getPosition());
-        salary_salary.setText(String.valueOf(employeeD.getSalary()));
-*/
-    }
-
     public void defaultNav() {
         home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
     }
@@ -1310,12 +1155,10 @@ public void addVolAdd() {
             admin_gestion_clients.setVisible(false);
             client_interface.setVisible(false);
             home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+            gestion_escales.setStyle("-fx-background-color:transparent");
+            gestion_clients.setStyle("-fx-background-color:transparent");
             gestion_vols.setStyle("-fx-background-color:transparent");
-            admin_gestion_clients.setStyle("-fx-background-color:transparent");
 
-            homeTotalEmployees();
-            homeEmployeeTotalPresent();
-            homeTotalInactive();
             homeChart();
 
         } else if (event.getSource() == gestion_vols) {
@@ -1326,11 +1169,11 @@ public void addVolAdd() {
             client_interface.setVisible(false);
             gestion_vols.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
             home_btn.setStyle("-fx-background-color:transparent");
+            gestion_escales.setStyle("-fx-background-color:transparent");
+            gestion_clients.setStyle("-fx-background-color:transparent");
        //     salary_btn.setStyle("-fx-background-color:transparent");
 
-            addEmployeeGendernList();
-            addEmployeePositionList();
-            addVolSearch();
+            //addVolSearch();
 
         } else if (event.getSource() == gestion_clients) {
             home.setVisible(false);
@@ -1339,10 +1182,10 @@ public void addVolAdd() {
             admin_gestion_clients.setVisible(true);
             client_interface.setVisible(false);
           //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-            gestion_vols.setStyle("-fx-background-color:transparent");
             home_btn.setStyle("-fx-background-color:transparent");
-
-            salaryShowListData();
+            gestion_clients.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+            gestion_escales.setStyle("-fx-background-color:transparent");
+            gestion_vols.setStyle("-fx-background-color:transparent");
 
         }else if(event.getSource()==gestion_escales)
         {
@@ -1360,22 +1203,28 @@ public void addVolAdd() {
             //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
             gestion_vols.setStyle("-fx-background-color:transparent");
             home_btn.setStyle("-fx-background-color:transparent");
+            gestion_escales.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+            gestion_clients.setStyle("-fx-background-color:transparent");
+
+
         }
 
 
        if (event.getSource() == listes_vols) {
 
+           try {
+               getVolsFromDatabase();
+           } catch (SQLException e) {
+               throw new RuntimeException(e);
+           }
            user_reservations.setVisible(false);
            user_liste_vols.setVisible(true);
            user_listes_escales.setVisible(false);
 
-           home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-           gestion_vols.setStyle("-fx-background-color:transparent");
-           admin_gestion_clients.setStyle("-fx-background-color:transparent");
+           listes_vols.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+           vols_reservees.setStyle("-fx-background-color:transparent");
 
-           homeTotalEmployees();
-           homeEmployeeTotalPresent();
-           homeTotalInactive();
+
            homeChart();
 
        } else if (event.getSource() == vols_reservees) {
@@ -1383,25 +1232,23 @@ public void addVolAdd() {
            user_liste_vols.setVisible(false);
            user_listes_escales.setVisible(false);
 
-           gestion_vols.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-           home_btn.setStyle("-fx-background-color:transparent");
+           vols_reservees.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+           listes_vols.setStyle("-fx-background-color:transparent");
            //     salary_btn.setStyle("-fx-background-color:transparent");
 
-           addEmployeeGendernList();
-           addEmployeePositionList();
-           addVolSearch();
+           //addEmployeeGendernList();
+           //addEmployeePositionList();
+           //addVolSearch();
 
-       } else if (event.getSource() == user_escales_btn) {
-
+       } else if (event.getSource() == user_escales_btn ) {
+           if( VoirEscale() != null){
+            populateEscaleTable();
            user_reservations.setVisible(false);
            user_liste_vols.setVisible(false);
            user_listes_escales.setVisible(true);
-
            //  salary_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
-           gestion_vols.setStyle("-fx-background-color:transparent");
-           home_btn.setStyle("-fx-background-color:transparent");
-
-           salaryShowListData();
+           listes_vols.setStyle("-fx-background-color:transparent");
+           vols_reservees.setStyle("-fx-background-color:transparent");}
 
        }
    }
@@ -1650,7 +1497,7 @@ public void addVolAdd() {
         heure_arrivee_escale1.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
         heure_depart_escale1.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
         ville_escale1.setCellValueFactory(new PropertyValueFactory<>("ville"));
-        durre.setCellValueFactory(new PropertyValueFactory<>("durre"));
+        duree1.setCellValueFactory(new PropertyValueFactory<>("durre"));
 
         escales_tableview.setItems(addEscaleList);
     }
@@ -1721,15 +1568,7 @@ public void addVolAdd() {
 
 
     private ObservableList<EscaleData> escaleList;
-    public void populateEscaleTable() {
-        escaleList = VoirEscale();
 
-        heure_arrivee.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
-        heure_depart.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
-        ville.setCellValueFactory(new PropertyValueFactory<>("ville"));
-
-        user_escales_tableview.setItems(escaleList);
-    }
 
 
 
@@ -1746,12 +1585,11 @@ public void addVolAdd() {
             alert.showAndWait();
             return null;
         }
-
         // Vérifier si le statut de la réservation est true
         if (selectedReservation.isStatus()) {
             // Statut de réservation est true, afficher les escales
             int volNum = selectedReservation.getIdVolReservation();
-            String escaleQuery = "SELECT e.id_escale, e.heure_d, e.heure_a, e.ville FROM escale e JOIN reservation r ON r.vol_num_vol = e.id_vol WHERE r.status = true AND r.vol_num_vol = ?";
+            String escaleQuery = "select e.id_escale ,e.heure_a, e.heure_d , e.ville from escale e , vol v where e.id_vol = v.num_vol and e.id_vol = ?";
             connect = database.connectDb();
 
             try {
@@ -1767,12 +1605,26 @@ public void addVolAdd() {
                     String heureArrivee = result.getString("heure_a");
                     String ville = result.getString("ville");
                     String id=result.getString("id_escale");
-                    EscaleData escaleData = new EscaleData(id,heureArrivee,heureDepart, ville);
+                    int durationInMinutes;
+
+                    if (heureDepart.length() >= 5 || heureArrivee.length() >= 5) {
+                        // Extract hours and minutes from the time strings
+                        int departHour = Integer.parseInt(heureDepart.substring(0, 2));
+                        int departMinute = Integer.parseInt(heureDepart.substring(3, 5));
+                        int arriveHour = Integer.parseInt(heureArrivee.substring(0, 2));
+                        int arriveMinute = Integer.parseInt(heureArrivee.substring(3, 5));
+                        durationInMinutes = (departHour * 60 + departMinute) - (arriveHour * 60 + arriveMinute);
+                    } else {
+                        int departHour = Integer.parseInt(heureDepart);
+                        int arriveHour = Integer.parseInt(heureArrivee);
+                        durationInMinutes = (departHour * 60) - (arriveHour * 60);
+                    }
+                    EscaleData escaleData = new EscaleData(id,heureArrivee,heureDepart, ville,durationInMinutes);
                     escaleList.add(escaleData);
                 }
 
                 // Afficher la liste des escales dans la table
-                user_escales_tableview.setItems(escaleList);
+                //user_escales_tableview.setItems(escaleList);
 
                 return escaleList;
             } catch (Exception e) {
@@ -1791,7 +1643,22 @@ public void addVolAdd() {
         return null;
     }
 
+    public void populateEscaleTable() {
+        escaleList = VoirEscale();
 
+        heure_arrivee.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
+        heure_depart.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
+        ville.setCellValueFactory(new PropertyValueFactory<>("ville"));
+        durre.setCellValueFactory(new PropertyValueFactory<>("durre"));
+       /* for (EscaleData escale : escaleList) {
+            System.out.println("Heure Arrivée: " + escale.getHeureArrivee());
+            System.out.println("Heure Départ: " + escale.getHeureDepart());
+            System.out.println("Ville: " + escale.getVille());
+            System.out.println("--------------------");
+        }*/
+        user_escales_tableview.getItems().clear();
+        user_escales_tableview.setItems(escaleList);
+    }
 
 
     public void retrieveReservationDataListAdmin() {
@@ -1951,7 +1818,7 @@ public void addVolAdd() {
         Document document = new Document();
 
 
-        String filePath = "C:\\Users\\med aziz\\Desktop\\telechargement\\ticket.pdf";
+        String filePath = "C:\\Users\\jungleboy\\Desktop\\Downloads\\ticket.pdf";
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(filePath));
 
         document.open();
@@ -2083,6 +1950,13 @@ public void addVolAdd() {
         }
 
     }
+//extraire id vol de comboBox
+private int extractFlightId(String selectedFlight) {
+    // Assuming the flight ID is the substring before the first space character
+    String[] parts = selectedFlight.split(" ");
+    return Integer.parseInt(parts[0]);
+}
+
 
     public void close() {
         System.exit(0);
@@ -2098,6 +1972,8 @@ public void addVolAdd() {
 
 
         String role = getData.getRole();
+        vols_reservees.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
+        home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3a4368, #28966c);");
 
         if(role.equals("admin")) {
             admin_gestion_vols.setVisible(false);
@@ -2110,20 +1986,52 @@ public void addVolAdd() {
         {
             admin_interface.setVisible(false);
             client_interface.setVisible(true);
+            try {
+                getVolsFromDatabase();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            volComboBox1.setOnAction(event -> {
+                String selectedFlight = volComboBox1.getValue();
+                //System.out.println("******VolCombBox value: " + volComboBox1.getValue());
+                // Extract the flight ID from the selected flight string
+                if(volComboBox1.getValue() != null){
+                int selectedFlightId = extractFlightId(selectedFlight);
+                ObservableList<ReservationData> filteredReservations = filterReservationsByFlight(selectedFlightId);
+                user_reservations_tableview.setItems(filteredReservations);}
+                else{
+                    addReservationShowListData();
+
+                }
+            });
+
+
         }
+
+
+        //recherche vols dans l'interface client****
+        recherche_vol.setOnKeyReleased(event -> {
+            String keyword = recherche_vol.getText().toLowerCase(); // Retrieve the search keyword
+            if(recherche_vol.getText() != ""){
+            // Filter the volDataList based on the keyword using matchesKeyword() method
+            ObservableList<VolData> filteredList = volDataList.filtered(vol ->
+                    vol.matchesKeyword(keyword)
+            );
+
+            // Update the user_vols_tableview with the filtered list
+            user_vols_tableview.setItems(filteredList);}
+            else{
+                populateVolTableView();
+            }
+        });
 
         displayUsername();
         defaultNav();
-
-        homeTotalEmployees();
-        homeEmployeeTotalPresent();
-        homeTotalInactive();
         homeChart();
         addReservationShowListData();
        addVolShowListData();
        addEscaleShowListData();
-        addEmployeeGendernList();
-        addEmployeePositionList();
         populateVolTableView();
         retrieveReservationDataListAdmin();
         homePaysLaPlusVisite();

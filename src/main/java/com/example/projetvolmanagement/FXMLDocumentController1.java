@@ -115,7 +115,10 @@ public class FXMLDocumentController1 implements Initializable {
 
     @FXML
     private TextField nom;
-
+    @FXML
+    private TextField signup_nom;
+    @FXML
+    private TextField signup_prenom;
 
     @FXML
     private TextField prenom;
@@ -314,7 +317,7 @@ public class FXMLDocumentController1 implements Initializable {
         if (signup_email.getText().isEmpty() || signup_username.getText().isEmpty()
                 || signup_password.getText().isEmpty() || signup_cPassword.getText().isEmpty()
                 || signup_selectQuestion.getSelectionModel().getSelectedItem() == null
-                || signup_answer.getText().isEmpty() || nom.getText().isEmpty() || prenom.getText().isEmpty()) {
+                || signup_answer.getText().isEmpty() || signup_nom.getText().isEmpty() || signup_prenom.getText().isEmpty()) {
             alert.errorMessage("All fields are necessary to be filled");
         } else if (signup_password.getText() == signup_cPassword.getText()) {
             // CHECK IF THE VALUE OF PASSWORD FIELDS IS EQUAL TO CONFIRM PASSWORD
@@ -337,7 +340,7 @@ public class FXMLDocumentController1 implements Initializable {
                 } else {
 
                     String insertData = "INSERT INTO users "
-                            + "(email, username, password, question, answer, date,nom,prenom) "
+                            + "(email, username, password, question, answer, date,nom,prenom,role) "
                             + "VALUES(?,?,?,?,?,?,?,?,'user')"; // FIVE (?)
 
                     prepare = connect.prepareStatement(insertData);
@@ -352,9 +355,10 @@ public class FXMLDocumentController1 implements Initializable {
                     Date date = new Date();
                     java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
+
                     prepare.setString(6, String.valueOf(sqlDate));
-prepare.setString(7,nom.getText());
-prepare.setString(8,prenom.getText());
+                    prepare.setString(7,signup_nom.getText());
+                    prepare.setString(8,signup_prenom.getText());
                     prepare.executeUpdate();
 
                     alert.successMessage("Registered Successfully!");
@@ -478,6 +482,9 @@ prepare.setString(8,prenom.getText());
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        login_form.setVisible(true);
+        signup_form.setVisible(false);
+        forgot_form.setVisible(false);
         questions();
 
         forgotListQuestion();

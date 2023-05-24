@@ -6,11 +6,16 @@ public class Vol {
 
     private int num_vol;
     private Date dateDepart;
-    private String heure_d, heure_a;
+    private String heure_d, heure_a, depart,destination;
     List<Escale> escales = new ArrayList<>();
     private float prix;
 
 
+    public Vol(int numVol, String depart,String destination){
+        this.num_vol = numVol;
+        this.depart = depart;
+        this.destination = destination;
+    }
     public int getNum_vol() {
         return num_vol;
     }
@@ -64,5 +69,21 @@ public class Vol {
 
     public void supprimerEscale(Escale e){
         escales.remove(e);
+    }
+
+    public String getDepart() {
+        return depart;
+    }
+
+    public void setDepart(String depart) {
+        this.depart = depart;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 }

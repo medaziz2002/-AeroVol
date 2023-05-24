@@ -127,4 +127,13 @@ public class VolData {
     public StringProperty dateVolProperty() {
         return dateVol;
     }
+
+    public boolean matchesKeyword(String keyword) {
+        String lowerCaseKeyword = keyword.toLowerCase();
+        return numVol.get().toLowerCase().contains(lowerCaseKeyword)
+                || depart.get().toLowerCase().contains(lowerCaseKeyword)
+                || destination.get().toLowerCase().contains(lowerCaseKeyword)
+                || dateVol.get().toLowerCase().contains(lowerCaseKeyword);
+        // Add more conditions if needed based on your data structure
+    }
 }

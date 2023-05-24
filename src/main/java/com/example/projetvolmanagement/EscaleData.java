@@ -27,6 +27,15 @@ public class EscaleData {
         this.heureDepart = new SimpleStringProperty(heureDepart);
         this.ville = new SimpleStringProperty(ville);
     }
+
+    public EscaleData(String idEscale ,String heureArrivee, String heureDepart, String ville,Integer durre) {
+        this.idEscale=new SimpleStringProperty(idEscale);
+        this.heureArrivee = new SimpleStringProperty(heureArrivee);
+        this.heureDepart = new SimpleStringProperty(heureDepart);
+        this.ville = new SimpleStringProperty(ville);
+        this.durre=new SimpleIntegerProperty(durre) ;
+    }
+
     public Integer getDurre() {
         return durre.get();
     }
