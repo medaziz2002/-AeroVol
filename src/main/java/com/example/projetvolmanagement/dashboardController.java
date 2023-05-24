@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -1497,7 +1499,7 @@ private ObservableList<ReservationData> filterReservationsByFlight(int flightId)
         heure_arrivee_escale1.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
         heure_depart_escale1.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
         ville_escale1.setCellValueFactory(new PropertyValueFactory<>("ville"));
-        duree1.setCellValueFactory(new PropertyValueFactory<>("durre"));
+        durre.setCellValueFactory(new PropertyValueFactory<>("durre"));
 
         escales_tableview.setItems(addEscaleList);
     }
@@ -1649,7 +1651,7 @@ private ObservableList<ReservationData> filterReservationsByFlight(int flightId)
         heure_arrivee.setCellValueFactory(new PropertyValueFactory<>("heureArrivee"));
         heure_depart.setCellValueFactory(new PropertyValueFactory<>("heureDepart"));
         ville.setCellValueFactory(new PropertyValueFactory<>("ville"));
-        durre.setCellValueFactory(new PropertyValueFactory<>("durre"));
+        duree1.setCellValueFactory(new PropertyValueFactory<>("durre"));
        /* for (EscaleData escale : escaleList) {
             System.out.println("Heure Arrivée: " + escale.getHeureArrivee());
             System.out.println("Heure Départ: " + escale.getHeureDepart());
@@ -1809,104 +1811,118 @@ private ObservableList<ReservationData> filterReservationsByFlight(int flightId)
         }
     }
 
-
+    private static String generateMD5Hash(String data) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(data.getBytes());
+            byte[] digest = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public void generateTicketPDF(int reservationId) throws FileNotFoundException, DocumentException {
         // Création du document PDF
-
-
-
         Document document = new Document();
 
-
-        String filePath = "C:\\Users\\jungleboy\\Desktop\\Downloads\\ticket.pdf";
+        String filePath = "C:\\Users\\med aziz\\Desktop\\telechargement\\ticket.pdf";
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(filePath));
 
         document.open();
 
-            // Requête SQL pour récupérer les informations de réservation
-            String sql = "SELECT u.nom, u.prenom as prenom,  v.dateDepart, v.heure_d, v.depart, v.destination, r.num_reservation " +
-                    "FROM reservation r, vol v, users u " +
-                    "WHERE r.vol_num_vol = v.num_vol " +
-                    "AND r.client_id = u.user_id " +
-                    "AND r.status = true " +
-                    "AND r.num_reservation = ? and r.client_id=?";
+        // Requête SQL pour récupérer les informations de réservation
+        String sql = "SELECT u.nom, u.prenom as prenom,  v.dateDepart, v.heure_d, v.depart, v.destination, r.num_reservation ,v.num_vol " +
+                "FROM reservation r, vol v, users u " +
+                "WHERE r.vol_num_vol = v.num_vol " +
+                "AND r.client_id = u.user_id " +
+                "AND r.status = true " +
+                "AND r.num_reservation = ? and r.client_id=?";
 
-            Connection connection = null;
-            PreparedStatement statement = null;
-            ResultSet resultSet = null;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
-            try {
-                connection = database.connectDb();
-                statement = connection.prepareStatement(sql);
-                statement.setInt(1, reservationId);
-                statement.setInt(2,getData.getUserId());
-                resultSet = statement.executeQuery();
+        try {
+            connection = database.connectDb();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, reservationId);
+            statement.setInt(2, getData.getUserId());
+            resultSet = statement.executeQuery();
 
-                if (resultSet.next()) {
-                    // Récupérer les informations de réservation depuis le ResultSet
-                    String nom = resultSet.getString("nom");
-                    String prenom = resultSet.getString("prenom");
-                    String dateDepart = resultSet.getString("dateDepart");
-                    String heureDepart = resultSet.getString("heure_d");
-                    String depart = resultSet.getString("depart");
-                    String destination = resultSet.getString("destination");
-                    int numReservation = resultSet.getInt("num_reservation");
+            if (resultSet.next()) {
+                // Récupérer les informations de réservation depuis le ResultSet
+                String nom = resultSet.getString("nom");
+                String prenom = resultSet.getString("prenom");
+                String dateDepart = resultSet.getString("dateDepart");
+                String heureDepart = resultSet.getString("heure_d");
+                String depart = resultSet.getString("depart");
+                String destination = resultSet.getString("destination");
+                int numReservation = resultSet.getInt("num_reservation");
+                int num_vol = resultSet.getInt("num_vol");
 
-                    // Ajouter le contenu du ticket
-                    document.add(new Paragraph("Ticket de réservation"));
-                    document.add(new Paragraph("Nom : " + nom));
-                    document.add(new Paragraph("Prénom : " + prenom));
-                    document.add(new Paragraph("Date de départ : " + dateDepart));
-                    document.add(new Paragraph("Heure de départ : " + heureDepart));
-                    document.add(new Paragraph("Départ : " + depart));
-                    document.add(new Paragraph("Destination : " + destination));
-                    document.add(new Paragraph("Numéro de réservation : " + numReservation));
+                // Concaténer les données pour générer un code unique
+                String data = nom + prenom + dateDepart + heureDepart + depart + destination +
+                        String.valueOf(numReservation) + String.valueOf(num_vol);
 
-                    // Fermer le document PDF
-                    document.close();
+                // Générer le code de hachage MD5
+                String ticketCode = generateMD5Hash(data);
 
-                    // Afficher un message de succès
-                    System.out.println("Le ticket a été généré avec succès.");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (DocumentException e) {
-                throw new RuntimeException(e);
-            } finally {
-                // Fermer les ressources de la base de données
-                if (resultSet != null) {
-                    try {
-                        resultSet.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (connection != null) {
-                    try {
-                        connection.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+                // Ajouter le contenu du ticket
+                document.add(new Paragraph("Ticket de réservation numéro " + ticketCode));
+                document.add(new Paragraph("Nom : " + nom));
+                document.add(new Paragraph("Prénom : " + prenom));
+                document.add(new Paragraph("Date de départ : " + dateDepart));
+                document.add(new Paragraph("Heure de départ : " + heureDepart));
+                document.add(new Paragraph("Départ : " + depart));
+                document.add(new Paragraph("Destination : " + destination));
+                document.add(new Paragraph("Numéro de réservation : " + numReservation));
+                document.add(new Paragraph("Numéro de vol : " + num_vol));
             }
 
-    }
+
+            // Fermer le document PDF
+            document.close();
+
+            // Afficher un message de succès
+            System.out.println("Le ticket a été généré avec succès.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // Fermer les ressources de la base de données
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }}
 
 
 
-
-
-
-
-    private double x = 0;
+            private double x = 0;
     private double y = 0;
 
     public void logout() {

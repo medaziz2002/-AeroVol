@@ -12,11 +12,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.projetvolmanagement.FXMLDocumentController1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="335.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.projetvolmanagement.FXMLDocumentController1">
     <children>
         <AnchorPane fx:id="main_form" prefHeight="200.0" prefWidth="200.0" styleClass="white-bg" stylesheets="@../design/style.css">
             <children>
-                <AnchorPane fx:id="login_form" layoutX="12.0" layoutY="15.0" prefHeight="520.0" prefWidth="312.0">
+                <AnchorPane fx:id="login_form" layoutX="12.0" layoutY="15.0" prefHeight="520.0" prefWidth="312.0" visible="false">
                     <children>
                         <FontAwesomeIcon fill="#2a827b" glyphName="USER" layoutX="132.0" layoutY="77.0" size="5em" />
                         <Label layoutX="93.0" layoutY="86.0" text="Sign In Account" textFill="#187778">
@@ -43,7 +43,7 @@
                         </Hyperlink>
                     </children>
                 </AnchorPane>
-                <AnchorPane fx:id="signup_form" layoutX="12.0" layoutY="15.0" prefHeight="520.0" prefWidth="312.0" visible="false">
+                <AnchorPane fx:id="signup_form" layoutX="12.0" layoutY="15.0" prefHeight="520.0" prefWidth="312.0">
                     <children>
                         <FontAwesomeIcon fill="#2a827b" glyphName="USER_PLUS" layoutX="122.0" layoutY="65.0" size="5em" />
                         <Label layoutX="88.0" layoutY="74.0" text="Sign Up Account" textFill="#187778">
@@ -51,20 +51,16 @@
                                 <Font name="Gill Sans MT" size="20.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="signup_email" layoutX="39.0" layoutY="114.0" prefHeight="30.0" prefWidth="237.0" promptText="Email Address" styleClass="textfield" stylesheets="@../design/style.css" />
-                        <TextField fx:id="username" layoutX="39.0" layoutY="155.0" prefHeight="30.0" prefWidth="237.0" promptText="Username" styleClass="textfield" stylesheets="@../design/style.css" />
-
-                        <PasswordField fx:id="signup_password" layoutX="39.0" layoutY="197.0" prefHeight="30.0" prefWidth="237.0" promptText="Password" styleClass="textfield" stylesheets="@../design/style.css" />
-                        <PasswordField fx:id="signup_cPassword" layoutX="37.0" layoutY="240.0" prefHeight="30.0" prefWidth="237.0" promptText="Confirm Password" styleClass="textfield" stylesheets="@../design/style.css" />
-                        <Button fx:id="signup_btn" layoutX="37.0" layoutY="366.0" mnemonicParsing="false" onAction="#register" prefHeight="40.0" prefWidth="237.0" styleClass="btn" stylesheets="@../design/style.css" text="Sign Up" />
-                        <Label layoutX="110.0" layoutY="443.0" text="Sign In Account">
-                            <font>
-                                <Font name="Gill Sans MT" size="15.0" />
-                            </font>
-                        </Label>
+                        <TextField fx:id="signup_nom" layoutX="37.0" layoutY="106.0" prefHeight="30.0" prefWidth="237.0" promptText="Nom" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <TextField fx:id="signup_prenom" layoutX="37.0" layoutY="145.0" prefHeight="30.0" prefWidth="237.0" promptText="Prenom" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <TextField fx:id="signup_email" layoutX="37.0" layoutY="182.0" prefHeight="30.0" prefWidth="237.0" promptText="adresse email" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <TextField fx:id="signup_username" layoutX="37.0" layoutY="219.0" prefHeight="30.0" prefWidth="237.0" promptText="Username" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <PasswordField fx:id="signup_password" layoutX="37.0" layoutY="260.0" prefHeight="30.0" prefWidth="237.0" promptText="Mot de passe" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <PasswordField fx:id="signup_cPassword" layoutX="37.0" layoutY="296.0" prefHeight="30.0" prefWidth="237.0" promptText="Confirmer mot de passe" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <Button fx:id="signup_btn" layoutX="37.0" layoutY="423.0" mnemonicParsing="false" onAction="#register" prefHeight="40.0" prefWidth="237.0" styleClass="btn" stylesheets="@../design/style.css" text="Sign Up" />
                         <Button fx:id="signup_loginAccount" layoutX="38.0" layoutY="476.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="30.0" prefWidth="237.0" styleClass="btn" stylesheets="@../design/style.css" text="Login Account" />
-                        <ComboBox fx:id="signup_selectQuestion" layoutX="37.0" layoutY="284.0" prefHeight="30.0" prefWidth="237.0" promptText="Select Question" />
-                        <TextField fx:id="signup_answer" layoutX="37.0" layoutY="325.0" prefHeight="30.0" prefWidth="237.0" promptText="Answer" styleClass="textfield" stylesheets="@../design/style.css" />
+                        <ComboBox fx:id="signup_selectQuestion" layoutX="37.0" layoutY="337.0" prefHeight="30.0" prefWidth="237.0" promptText="Selectionner Question" />
+                        <TextField fx:id="signup_answer" layoutX="37.0" layoutY="380.0" prefHeight="30.0" prefWidth="237.0" promptText="Reponse" styleClass="textfield" stylesheets="@../design/style.css" />
                     </children>
                 </AnchorPane>
                 <AnchorPane fx:id="forgot_form" layoutX="12.0" layoutY="15.0" prefHeight="520.0" prefWidth="312.0" visible="false">
